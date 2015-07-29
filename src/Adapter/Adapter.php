@@ -67,7 +67,10 @@ class Adapter implements AdapterInterface, Profiler\ProfilerAwareInterface
      * @param Profiler\ProfilerInterface $profiler
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct($driver, Platform\PlatformInterface $platform = null, ResultSet\ResultSetInterface $queryResultPrototype = null, Profiler\ProfilerInterface $profiler = null)
+    public function __construct($driver,
+        Platform\PlatformInterface $platform = null,
+        ResultSet\ResultSetInterface $queryResultPrototype = null,
+        Profiler\ProfilerInterface $profiler = null)
     {
         // first argument can be an array of parameters
         $parameters = array();
@@ -308,7 +311,7 @@ class Adapter implements AdapterInterface, Profiler\ProfilerAwareInterface
     }
 
     /**
-     * @param Driver\DriverInterface $driver
+     * @param Driver\DriverInterface $parameters
      * @return Platform\PlatformInterface
      */
     protected function createPlatform($parameters)

@@ -1,0 +1,1 @@
+/var/www/lop/vendor/zendframework/zendframework/bin/classmap_generator.php
