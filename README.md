@@ -1,7 +1,7 @@
-ArchangelDB module for Zend Framework 2
-copyright (c) www.archangel-design.com
+# ArchangelDB module for Zend Framework 2
+## copyright (c) www.archangel-design.com
 
-Simple but powerful PHP Database Engine
+** Simple but powerful PHP Database Engine **
 
 Another version of Archangel DB introduces much more than the previous one.
 This time not only allowing transaction and prepared statements but also
@@ -25,6 +25,7 @@ So far tested on Mysql and PostgreSQL only.
 Examples of how easy it is to start using Archangel DB 2
 
 ============================================================================
+```
 <?php
 // initialized with config file adbConfig.php in module or project root
 require 'autoload_register.php';
@@ -33,8 +34,9 @@ $adb = new \ArchangelDB\ADB2();
 $users = $adb->fetchAll('users', ['deleted' => 0, 'active' => 1]);
 // $users now holds associative array of users
 ?>
+```
 ============================================================================
-
+```
 <?php
 // initialized with array as argument
 $config = [
@@ -54,12 +56,13 @@ $adb = new \ArchangelDB\ADB2($config);
 $users = $adb->fetchAll('users', ['deleted' => 0, 'active' => 1]);
 // $users now holds associative array of users
 ?>
+```
 ==============================================================================
-
+```
 // Executing custom SQL
 $res = $adb->executeRawQuery("select * from {users} where deleted = ? and active = ?", [0, 1]);
 
 // table prefix will be added automatically
-
+```
 
 
