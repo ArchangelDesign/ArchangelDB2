@@ -10,6 +10,18 @@
  * argument for ADB2 constructor.
  */
 
+return [
+    'driver' => 'mysqli',
+    'database' => 'lop',
+    'username' => 'admin',
+    'password' => 'admin',
+    'prefix' => 'lop_',
+    'profiler' => true,
+    'options' => [
+        'buffer_results' => true,
+    ]
+];
+
 return array(
     'driver' => 'pgsql',
     'dbname' => 'mis3',
