@@ -16,8 +16,8 @@ use Zend\Db\ResultSet\ResultSet;
  * Class ADB2
  * @package ArchangelDB
  */
-class ADB2 {
-
+class ADB2 implements ADB2Interface
+{
     /**
      * @var array|mixed
      */
@@ -144,7 +144,8 @@ class ADB2 {
      * Returns time last query needed to return buffered result
      * @return int
      */
-    public function getLastQueryTime() {
+    public function getLastQueryTime()
+    {
         if ($this->_conf['profiler']) {
             return $this->_adapter->getProfiler()->getLastProfile()['elapse'];
         } else {

@@ -180,6 +180,7 @@ return array(
     'Zend\Db\RowGateway\AbstractRowGateway'                          => __DIR__ . '/src/RowGateway/AbstractRowGateway.php',
     'Zend\Db\RowGateway\RowGatewayInterface'                         => __DIR__ . '/src/RowGateway/RowGatewayInterface.php',
     'ArchangelDB\ADB2'                                               => __DIR__ . '/src/Core/ADB2.php',
+    'ArchangelDB\ADB2Interface'                                      => __DIR__ . '/src/Core/ADB2Interface.php',
     'ArchangelDB\ConfigLoader'                                       => __DIR__ . '/src/Core/ConfigLoader.php',
     'ArchangelDBTest\Framework\TestCase'                             => __DIR__ . '/tests/ArchangelDB/Framework/TestCase.php',
     'ArchangelDBTest\SampleTest'                                     => __DIR__ . '/tests/ArchangelDB/SampleTest.php',
