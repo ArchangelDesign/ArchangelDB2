@@ -50,7 +50,7 @@ class ADB2 implements ADB2Interface
      * @param $table
      * @return mixed
      */
-    private function fixTableName($table)
+    private function fixTableNames($table)
     {
         $res = preg_replace('/\{(?=\w+\})/', $this->_conf['prefix'], $table);
         return str_replace('}', '', $res);
@@ -64,8 +64,8 @@ class ADB2 implements ADB2Interface
      */
     public function executeRawQuery($query, array $params = array())
     {
-        $this->result = $this->_adapter->query($this->fixTableName($query), $params);
-        return $this->result->toArray();
+        $this->result = $this->_adapter->query($this->fixTableNames($query), $params);
+        return $this->result;
     }
 
     /**
@@ -77,7 +77,7 @@ class ADB2 implements ADB2Interface
     public function executePreparedQuery($query, $params = null)
     {
         try {
-            $statement = $this->_adapter->createStatement($this->fixTableName($query));
+            $statement = $this->_adapter->createStatement($this->fixTableNames($query));
             $res = $statement->execute($params);
 
         } catch (\Exception $e) {
@@ -104,7 +104,7 @@ class ADB2 implements ADB2Interface
      * @param string $columns
      * @return array
      */
-    public function fetchAll($table, array $conditions, $columns = '*')
+    public function fetchAll($table, array $conditions = array(), $columns = '*')
     {
         $table = $this->_conf['prefix'] . $table;
         $query = "select $columns from $table ";
@@ -117,8 +117,8 @@ class ADB2 implements ADB2Interface
                 $vals[] = $condition;
             }
             $query .= implode(' and ', $cond);
-        }
-        return $this->executeRawQuery($query, $vals);
+        } else { $vals = [];}
+        return $this->executeRawQuery($query, $vals)->toArray();
     }
 
     /**
@@ -173,5 +173,28 @@ class ADB2 implements ADB2Interface
     public function query($query)
     {
         return $this->executePreparedQuery($query);
+    }
+
+    public function lastInsertId()
+    {
+        //return $this->_driver->getConnection()->getLastGeneratedValue('insert');
+        return $this->result->getGeneratedValue();
+    }
+
+    public function insert($table, $record)
+    {
+        $columns = [];
+        $values = [];
+        $params = [];
+        $table = "{".$table."}";
+        foreach ($record as $col => $val) {
+            $columns[] = $col;
+            $values[] = $val;
+            $params[] = '?';
+        }
+        $columns = implode(',', $columns);
+        $params = implode(',', $params);
+        $query = "insert into $table($columns) values($params)";
+        return $this->executeRawQuery($query, $values);
     }
 }

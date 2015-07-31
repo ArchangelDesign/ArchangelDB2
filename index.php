@@ -10,9 +10,9 @@ require 'autoload_register.php';
 
 $adb = new \ArchangelDB\ADB2();
 
-$res = $adb->fetchAll('users', ['date' => 234]);
-//$res = $adb->executeRawQuery("select * from {users} where 1=1");
-$prof = $adb->getLastQuery();
+$res = $adb->insert('users', [ 'name' => 'Pascal', 'surname' => 'Picolo', 'date' => 'now()']);
+var_dump($adb->getLastQuery());
+var_dump($adb->lastInsertId());
 
 var_dump($res);
-var_dump($prof);
+var_dump($adb->fetchAll('users'));
