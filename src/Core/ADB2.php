@@ -161,7 +161,7 @@ class ADB2 implements ADB2Interface
      */
     public function getAll($query)
     {
-        return $this->executeRawQuery($query);
+        return $this->executeRawQuery($query)->toArray();
     }
 
     /**
