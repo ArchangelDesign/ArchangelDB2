@@ -16,5 +16,14 @@ interface ADB2Interface
     public function getLastQuery();
     public function getLastQueryTime();
     public function getAll($query);
+    public function fetchOne($table, array $conditions, $columns = '*');
     public function query($query);
+    public function insert($table, $record);
+    public function lastInsertId();
+    public function columnExists($tableName, $columnName);
+    public function tableExists($tableName);
+    public function insertTable($tableName, $columns, $keys);
+    public function dropTable($table);
+    public function deleteSingleRocord($table, array $conditions);
+    public function deleteRocords($table, array $conditions);
 }

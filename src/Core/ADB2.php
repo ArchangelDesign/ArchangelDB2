@@ -269,11 +269,30 @@ class ADB2 implements ADB2Interface
         }
         $params = implode(' and ', $params);
         $query = "delete from $table where $params";
-        $check = "delete from $table where $params";
         $buffer = $this->fetchAll($table, $conditions, '*');
         if (!empty($buffer)) {
             return false;
         }
         return $this->executeRawQuery($query, $values);
+    }
+
+    public function dropTable($table)
+    {
+        return true;
+    }
+
+    public function insertTable($tableName, $columns, $keys)
+    {
+        return true;
+    }
+
+    public function tableExists($tableName)
+    {
+        return true;
+    }
+
+    public function columnExists($tableName, $columnName)
+    {
+        return true;
     }
 }
