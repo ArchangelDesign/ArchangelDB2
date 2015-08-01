@@ -130,7 +130,11 @@ class ADB2 implements ADB2Interface
         if ($this->_conf['profiler']) {
             $prof = $this->_adapter->getProfiler()->getLastProfile();
             $query = $prof['sql'];
-            $data = $prof['parameters']->getNamedArray();
+            if (!empty($prof['parameters'])) {
+                $data = $prof['parameters']->getNamedArray();
+            } else {
+                $data = [];
+            }
             foreach ($data as $parameter) {
                 $query = preg_replace('/\?/', "'$parameter'", $query, 1);
             }
@@ -175,12 +179,27 @@ class ADB2 implements ADB2Interface
         return $this->executePreparedQuery($query);
     }
 
+    /**
+     * Returns ID of last inserted record or false if no result available
+     * @return int|bool
+     */
     public function lastInsertId()
     {
-        //return $this->_driver->getConnection()->getLastGeneratedValue('insert');
+        if (!is_object($this->result)) {
+            return false;
+        }
+        if (!method_exists($this->result, 'getGeneratedValue')) {
+            return false;
+        }
         return $this->result->getGeneratedValue();
     }
 
+    /**
+     * Inserts single record to given table
+     * @param $table
+     * @param $record
+     * @return array
+     */
     public function insert($table, $record)
     {
         $columns = [];
@@ -195,6 +214,26 @@ class ADB2 implements ADB2Interface
         $columns = implode(',', $columns);
         $params = implode(',', $params);
         $query = "insert into $table($columns) values($params)";
+        return $this->executeRawQuery($query, $values);
+    }
+
+    /**
+     * Deleted one or more records from given table
+     * @param $table
+     * @param array $conditions
+     * @return array
+     */
+    public function deleteRocords($table, array $conditions)
+    {
+        $values = [];
+        $params = [];
+        $table = "{".$table."}";
+        foreach ($conditions as $col => $val) {
+            $values[] = $val;
+            $params[] = $col . ' = ?';
+        }
+        $params = implode(' and ', $params);
+        $query = "delete from $table where $params";
         return $this->executeRawQuery($query, $values);
     }
 }

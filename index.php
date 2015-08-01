@@ -14,5 +14,7 @@ $res = $adb->insert('users', [ 'name' => 'Pascal', 'surname' => 'Picolo', 'date'
 var_dump($adb->getLastQuery());
 var_dump($adb->lastInsertId());
 
-var_dump($res);
+var_dump($adb->deleteRocords('users', ['name' => 'Pascal']));
+var_dump($adb->getLastQuery());
+
 var_dump($adb->fetchAll('users'));
