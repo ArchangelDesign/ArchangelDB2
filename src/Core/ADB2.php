@@ -122,6 +122,20 @@ class ADB2 implements ADB2Interface
     }
 
     /**
+     * Fetches single record from database. If more records fit
+     * only first one is returned
+     * @param $table
+     * @param array $conditions
+     * @param string $columns
+     * @return mixed
+     */
+    public function fetchOne($table, array $conditions, $columns = '*')
+    {
+        $result = $this->fetchAll($table, $conditions, $columns);
+        return array_shift($result);
+    }
+
+    /**
      * Returns last query string with given parameters
      * @return array|string
      */
@@ -234,6 +248,32 @@ class ADB2 implements ADB2Interface
         }
         $params = implode(' and ', $params);
         $query = "delete from $table where $params";
+        return $this->executeRawQuery($query, $values);
+    }
+
+    /**
+     * Deletes single record. If more than one record fits conditions
+     * method returns false and no records are deleted
+     * @param $table
+     * @param array $conditions
+     * @return array|bool
+     */
+    public function deleteSingleRocord($table, array $conditions)
+    {
+        $values = [];
+        $params = [];
+        $table = "{".$table."}";
+        foreach ($conditions as $col => $val) {
+            $values[] = $val;
+            $params[] = $col . ' = ?';
+        }
+        $params = implode(' and ', $params);
+        $query = "delete from $table where $params";
+        $check = "delete from $table where $params";
+        $buffer = $this->fetchAll($table, $conditions, '*');
+        if (!empty($buffer)) {
+            return false;
+        }
         return $this->executeRawQuery($query, $values);
     }
 }
