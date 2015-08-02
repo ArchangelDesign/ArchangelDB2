@@ -14,9 +14,10 @@ $res = $adb->insert('users', [ 'name' => 'Pascal', 'surname' => 'Picolo', 'date'
 var_dump($adb->getLastQuery());
 var_dump($adb->lastInsertId());
 
-//var_dump($adb->deleteRocords('users', ['name' => 'Pascal']));
+var_dump($adb->deleteRocords('users', ['name' => 'Pascal']));
 var_dump($adb->getLastQuery());
 
-var_dump($adb->fetchAll('users'));
+ var_dump($adb->fetchAll('users'));
 
-var_dump($adb->columnExists('users', 'name'));
+var_dump($adb->tableExists('users'));
+var_dump($adb->getLastQuery());
