@@ -293,6 +293,28 @@ class ADB2 implements ADB2Interface
 
     public function columnExists($tableName, $columnName)
     {
-        return true;
+        $tn = '{'.$tableName.'}';
+        $res = $this->executeRawQuery("show columns from $tn like '$columnName'");
+        if ($res->count() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public function beginTransaction()
+    {
+        $this->_driver->getConnection()->beginTransaction();
+    }
+
+    public function commitTransaction()
+    {
+        $this->_driver->getConnection()->commit();
+    }
+
+    public function rollbackTransaction()
+    {
+        $this->_driver->getConnection()->rollback();
     }
 }

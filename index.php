@@ -18,3 +18,5 @@ var_dump($adb->lastInsertId());
 var_dump($adb->getLastQuery());
 
 var_dump($adb->fetchAll('users'));
+
+var_dump($adb->columnExists('users', 'name'));

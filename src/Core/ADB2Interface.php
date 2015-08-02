@@ -26,4 +26,7 @@ interface ADB2Interface
     public function dropTable($table);
     public function deleteSingleRocord($table, array $conditions);
     public function deleteRocords($table, array $conditions);
+    public function beginTransaction();
+    public function commitTransaction();
+    public function rollbackTransaction();
 }
