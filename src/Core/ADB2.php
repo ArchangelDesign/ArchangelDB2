@@ -300,6 +300,16 @@ class ADB2 implements ADB2Interface
         return $this->executeRawQuery($query, $values);
     }
 
+    /**
+     * Updates record with given key value
+     * if no key value given, value of ID key is assumed
+     * if no key given and no ID defined, exception is thrown
+     * @param $tableName
+     * @param array $record
+     * @param null $uniqueKey
+     * @return mixed
+     * @throws \Exception
+     */
     public function updateRecords($tableName, array $record, $uniqueKey = null)
     {
         $tableName = '{' . $tableName . '}';
