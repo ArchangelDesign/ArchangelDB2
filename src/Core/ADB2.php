@@ -300,6 +300,36 @@ class ADB2 implements ADB2Interface
         return $this->executeRawQuery($query, $values);
     }
 
+    public function updateRecords($tableName, array $record, $uniqueKey = null)
+    {
+        $tableName = '{' . $tableName . '}';
+        if (empty($uniqueKey)) {
+            if (!isset($record['id'])) {
+                throw new \Exception('Invalid data given to updateRecords method. '
+                    . ' You must specify unique key or provide record ID');
+            }
+            $uniqueKey = 'id';
+        }
+        if (!isset($record[$uniqueKey])) {
+            throw new \Exception('Invalid unique key given');
+        }
+        if (empty($record[$uniqueKey])) {
+            throw new \Exception('Unique key is empty');
+        }
+        $fields = [];
+        $keys = [];
+        foreach($record as $key => $field) {
+            if ($key != $uniqueKey) {
+                $fields[] = $field;
+                $keys[] = $key . ' = ? ';
+            }
+        }
+        $keys = implode(',', $keys);
+        $fields[] = $record[$uniqueKey];
+        $query = "update $tableName set $keys where $uniqueKey = ?";
+        $this->executeRawQuery($query, $fields)->count();
+        return $this->result->getAffectedRows();
+    }
     /**
      * Removes table from database
      * @param $table

@@ -19,6 +19,7 @@ interface ADB2Interface
     public function fetchOne($table, array $conditions, $columns = '*');
     public function query($query);
     public function insert($table, $record);
+    public function updateRecords($tableName, array $record, $uniqueKey = null);
     public function lastInsertId();
     public function columnExists($tableName, $columnName);
     public function tableExists($tableName);
