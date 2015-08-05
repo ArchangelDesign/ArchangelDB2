@@ -22,6 +22,10 @@ if (!$adb->tableExists('users')) {
 }
 
 print("inserting record to users...\n");
-$adb->insert('users', []);
-
+$adb->insert('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
+$testData = $adb->fetchOne('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
+if (!is_array($testData)) {
+    print("Insert, fetch test failed.\n");
+    die();
+}
 print("Test sequence completed.\n\n");
