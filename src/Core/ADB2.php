@@ -364,7 +364,7 @@ class ADB2 implements ADB2Interface
             $cols[] = "$name $definition[type]($definition[length]) $notNull $auto";
         }
         $colsDefs = implode(',', $cols);
-        $this->_adapter->query("create table $tableName ($colsDefs)");
+        $this->_adapter->query("create table $tname ($colsDefs)");
         return true;
     }
 
