@@ -44,6 +44,15 @@ class ADB2 implements ADB2Interface
     public function __construct($config = null)
     {
         $this->_conf = ConfigLoader::getConfig($config);
+        if (!isset($this->_conf['prefix'])) {
+            $this->_conf['prefix'] = '';
+        }
+        if (!isset($this->_conf['options']['buffer_results'])) {
+            $this->_conf['options']['buffer_results'] = true;
+        }
+        if (!$this->_conf['options']['buffer_results']) {
+            $this->_conf['options']['buffer_results'] = true;
+        }
         $this->_adapter = new Adapter($this->_conf);
         $this->_driver = $this->_adapter->getDriver();
     }
@@ -51,11 +60,22 @@ class ADB2 implements ADB2Interface
     /**
      * @param $table
      * @return mixed
+     * @deprecated
      */
     private function fixTableNames($table)
     {
         $res = preg_replace('/\{(?=\w+\})/', $this->_conf['prefix'], $table);
         return str_replace('}', '', $res);
+    }
+
+    /**
+     * Adds prefix to table name (if configured)
+     * @param $tableName
+     * @return mixed
+     */
+    private function fixTableName($tableName)
+    {
+        return $this->fixTableNames($tableName);
     }
 
     private function isDropAllowed()
@@ -76,7 +96,7 @@ class ADB2 implements ADB2Interface
      */
     public function executeRawQuery($query, array $params = array())
     {
-        $this->result = $this->_adapter->query($this->fixTableNames($query), $params);
+        $this->result = $this->_adapter->query($this->fixTableName($query), $params);
         return $this->result;
     }
 
@@ -89,7 +109,7 @@ class ADB2 implements ADB2Interface
     public function executePreparedQuery($query, $params = null)
     {
         try {
-            $statement = $this->_adapter->createStatement($this->fixTableNames($query));
+            $statement = $this->_adapter->createStatement($this->fixTableName($query));
             $res = $statement->execute($params);
 
         } catch (\Exception $e) {
@@ -199,6 +219,7 @@ class ADB2 implements ADB2Interface
      * @param $query
      * @param array $params
      * @return mixed
+     * @deprecated
      */
     public function getFirstRow($query, array $params = [])
     {
@@ -354,9 +375,16 @@ class ADB2 implements ADB2Interface
         }
     }
 
+    /**
+     * @param $tableName
+     * @param $columns
+     * @param null $options
+     * @param null $keys
+     * @return bool
+     */
     public function insertTable($tableName, $columns, $options = null, $keys = null)
     {
-        $tname = $this->fixTableNames($tableName);
+        $tname = $this->fixTableName($tableName);
         $cols = [];
         foreach ($columns as $name => $definition) {
             $notNull = isset($definition['notnull'])?'not null':'';

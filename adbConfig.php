@@ -23,6 +23,7 @@ return [
         'buffer_results' => true, // required for mysql and pgsql
         // if enabled, all results will be buffered. This option is required for ADB to work
         // properly, you can read about implications of this option on database provider site
+        // if not set, it defaults to true
     ]
 ];
 
