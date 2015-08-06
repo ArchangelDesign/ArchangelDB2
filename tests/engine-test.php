@@ -9,6 +9,11 @@ print "Testing ADB2...\n";
 
 require '../autoload_register.php';
 
+function goDead($msg) {
+    print($msg."\n");
+    die;
+}
+
 try {
     $adb = new \ArchangelDB\ADB2();
 } catch (Exception $e) {
@@ -40,6 +45,19 @@ if (!$adb->tableExists('users')) {
     die();
 }
 
+print("running column exists test...\n");
+if (!$adb->columnExists('users', 'name')) {
+    goDead("columnExists(name) failed.");
+}
+
+if (!$adb->columnExists('users', 'surname')) {
+    goDead("columnExists(surname) failed.");
+}
+
+if (!$adb->columnExists('users', 'date')) {
+    goDead("columnExists(date) failed.");
+}
+
 print("inserting record to users...\n");
 $adb->insert('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
 $testData = $adb->fetchOne('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
@@ -53,3 +71,4 @@ if (!isset($testData['name']) || !isset($testData['surname']) || !isset($testDat
     die();
 }
 print("Test sequence completed.\n\n");
+print("****** SUCCESS ******\n\n\n");
