@@ -15,6 +15,25 @@ try {
     print "Failed to create ADB \n"; die();
 }
 
+if (!$adb->tableExists('users')) {
+    $adb->insertTable('users',
+        [
+            'name' => [
+                'type' => 'varchar',
+                'length' => 50
+            ],
+            'surname' => [
+                'type' => 'varchar',
+                'length' => 50,
+            ],
+            'date' => [
+                'type' => 'integer',
+                'length' => 10,
+            ],
+        ]
+    );
+}
+
 print("checking table users...\n");
 if (!$adb->tableExists('users')) {
     print("No users table found in database.\n");
@@ -26,6 +45,11 @@ $adb->insert('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '
 $testData = $adb->fetchOne('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
 if (!is_array($testData)) {
     print("Insert, fetch test failed.\n");
+    die();
+}
+
+if (!isset($testData['name']) || !isset($testData['surname']) || !isset($testData['date'])) {
+    print("Fetch data test failed.\n");
     die();
 }
 print("Test sequence completed.\n\n");

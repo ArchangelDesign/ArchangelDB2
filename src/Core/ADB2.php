@@ -354,9 +354,17 @@ class ADB2 implements ADB2Interface
         }
     }
 
-    public function insertTable($tableName, $columns, $keys)
+    public function insertTable($tableName, $columns, $options = null, $keys = null)
     {
-        // @todo: implementetion
+        $tname = $this->fixTableNames($tableName);
+        $cols = [];
+        foreach ($columns as $name => $definition) {
+            $notNull = isset($definition['notnull'])?'not null':'';
+            $auto = isset($definition['auto'])?'auto_increment':'';
+            $cols[] = "$name $definition[type]($definition[length]) $notNull $auto";
+        }
+        $colsDefs = implode(',', $cols);
+        $this->_adapter->query("create table $tableName ($colsDefs)");
         return true;
     }
 
