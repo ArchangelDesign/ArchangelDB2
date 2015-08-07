@@ -336,8 +336,10 @@ class ADB2 implements ADB2Interface
         $tableName = '{' . $tableName . '}';
         if (empty($uniqueKey)) {
             if (!isset($record['id'])) {
-                throw new \Exception('Invalid data given to updateRecords method. '
-                    . ' You must specify unique key or provide record ID');
+                throw new \Exception(
+                    'Invalid data given to updateRecords method. '
+                    . ' You must specify unique key or provide record ID'
+                );
             }
             $uniqueKey = 'id';
         }
@@ -349,6 +351,9 @@ class ADB2 implements ADB2Interface
         }
         $fields = [];
         $keys = [];
+        $uniqueKeyValue = $record[$uniqueKey];
+        // do not update unique key
+        unset($record[$uniqueKey]);
         foreach($record as $key => $field) {
             if ($key != $uniqueKey) {
                 $fields[] = $field;
@@ -356,7 +361,7 @@ class ADB2 implements ADB2Interface
             }
         }
         $keys = implode(',', $keys);
-        $fields[] = $record[$uniqueKey];
+        $fields[] = $uniqueKeyValue;
         $query = "update $tableName set $keys where $uniqueKey = ?";
         $this->executeRawQuery($query, $fields)->count();
         return $this->result->getAffectedRows();

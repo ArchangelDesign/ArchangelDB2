@@ -10,6 +10,7 @@ print "Testing ADB2...\n";
 require '../autoload_register.php';
 
 function goDead($msg) {
+    print("====== FAILED ======");
     print($msg."\n");
     die;
 }
@@ -41,8 +42,7 @@ if (!$adb->tableExists('users')) {
 
 print("checking table users...\n");
 if (!$adb->tableExists('users')) {
-    print("No users table found in database.\n");
-    die();
+    goDead("No users table found in database.");
 }
 
 print("running column exists test...\n");
@@ -58,17 +58,38 @@ if (!$adb->columnExists('users', 'date')) {
     goDead("columnExists(date) failed.");
 }
 
+print("clearing table...\n");
+$adb->deleteRocords('users', ['1' => '1']);
+
 print("inserting record to users...\n");
 $adb->insert('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
 $testData = $adb->fetchOne('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
 if (!is_array($testData)) {
-    print("Insert, fetch test failed.\n");
-    die();
+    goDead("Insert, fetch test failed.");
 }
 
 if (!isset($testData['name']) || !isset($testData['surname']) || !isset($testData['date'])) {
-    print("Fetch data test failed.\n");
-    die();
+    goDead("Fetch data test failed.");
 }
+
+if ($testData['name'] != 'Archangel' || $testData['surname'] != 'Design' || $testData['date'] != '791') {
+    goDead("fetchOne returned unexpected data.");
+}
+// to lowercase
+print("testing updates...\n");
+$testData['surname'] = 'design';
+unset($testData['id']);
+$adb->updateRecords('users', $testData, 'name');
+
+$testData = $adb->fetchOne('users', ['surname' => 'design']);
+print(print_r($testData, true));
+if (!$testData) {
+    goDead('Update test failed.');
+}
+
+if ($testData['surname'] != 'design') {
+    goDead("Update test failed.\n");
+}
+
 print("Test sequence completed.\n\n");
 print("****** SUCCESS ******\n\n\n");
