@@ -184,4 +184,5 @@ return array(
     'ArchangelDB\ConfigLoader'                                       => __DIR__ . '/src/Core/ConfigLoader.php',
     'ArchangelDBTest\Framework\TestCase'                             => __DIR__ . '/tests/ArchangelDB/Framework/TestCase.php',
     'ArchangelDBTest\SampleTest'                                     => __DIR__ . '/tests/ArchangelDB/SampleTest.php',
+    'ArchangelDB\Deployer'                                           => __DIR__ . '/src/Deployer/Deployer.php',
 );
