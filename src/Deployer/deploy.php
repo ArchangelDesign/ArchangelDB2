@@ -7,4 +7,5 @@
  */
 
 require("autoload_register.php");
-$deployer = new \ArchangelDB\Deployer();
+$adb = new \ArchangelDB\ADB2();
+$deployer = new \ArchangelDB\Deployer($adb);

@@ -16,9 +16,11 @@ class Deployer
 {
     private $_deployFile = null;
     private $_deployFileName = null;
+    private $_adb = null;
 
-    public function __construct($filename = null)
+    public function __construct(ArchangelDB\ADB2 $adb, $filename = null)
     {
+        $this->_adb = $adb;
         if ($filename === null) {
             return;
         }
@@ -44,5 +46,15 @@ class Deployer
     public function getDeployFileName()
     {
         return $this->_deployFileName;
+    }
+
+    public function deployDatabaseStructure()
+    {
+        if (empty($this->_deployFile)) {
+            throw new \Exception("No deployment data loaded.");
+        }
+
+        $data = new \SimpleXMLElement($this->_deployFile);
+        print (print_r($data));
     }
 }
