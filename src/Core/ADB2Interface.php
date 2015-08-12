@@ -17,6 +17,7 @@ interface ADB2Interface
     public function getLastQueryTime();
     public function getAll($query);
     public function fetchOne($table, array $conditions, $columns = '*');
+    public function fetchSingleValue($table, array $conditions, $column);
     public function query($query);
     public function insert($table, $record);
     public function updateRecords($tableName, array $record, $uniqueKey = null);

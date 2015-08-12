@@ -168,6 +168,22 @@ class ADB2 implements ADB2Interface
     }
 
     /**
+     * Returns value from given column
+     * @param $table
+     * @param array $conditions
+     * @param $column
+     * @return null
+     */
+    public function fetchSingleValue($table, array $conditions, $column)
+    {
+        $buf = $this->fetchOne($table, $conditions, $column);
+        if (empty($buf)) {
+            return null;
+        }
+        return $buf[$column];
+    }
+
+    /**
      * Returns last query string with given parameters
      * @return array|string
      */
