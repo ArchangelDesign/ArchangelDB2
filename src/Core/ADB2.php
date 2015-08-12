@@ -403,7 +403,7 @@ class ADB2 implements ADB2Interface
      * @param null $keys
      * @return bool
      */
-    public function insertTable($tableName, $columns, $options = null, $keys = null)
+    public function insertTable($tableName, array $columns, $options = null, $keys = null)
     {
         $tname = $this->fixTableName($tableName);
         $cols = [];

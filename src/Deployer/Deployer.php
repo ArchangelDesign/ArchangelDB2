@@ -16,7 +16,6 @@ class Deployer
 {
     private $_deployFile = null;
     private $_deployFileName = null;
-    private $_adb = null;
 
     public function __construct(ArchangelDB\ADB2 $adb, $filename = null)
     {
@@ -56,5 +55,10 @@ class Deployer
 
         $data = new \SimpleXMLElement($this->_deployFile);
         print (print_r($data));
+    }
+
+    public function updateDatabaseStructure()
+    {
+
     }
 }
