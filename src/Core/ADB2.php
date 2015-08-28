@@ -40,6 +40,7 @@ class ADB2 implements ADB2Interface
     /**
      * @param null $config
      * @throws \Zend\Db\Exception\ErrorException
+     * @throws \Exception
      */
     public function __construct($config = null)
     {
@@ -55,6 +56,24 @@ class ADB2 implements ADB2Interface
         }
         $this->_adapter = new Adapter($this->_conf);
         $this->_driver = $this->_adapter->getDriver();
+        $this->checkAndDeploy();
+    }
+
+    /**
+     * Check consistency, if there is anything missing, try to deploy it
+     */
+    private function checkAndDeploy()
+    {
+        $deployFile = isset($this->_conf['deploy-file'])?$this->_conf['deploy-file']:null;
+        $driver = $this->_conf['driver'];
+
+        if (!$deployFile) {
+            return null;
+        }
+
+        if ($driver == 'mysqli' || $driver == 'pdo_sql') {
+
+        }
     }
 
     /**
