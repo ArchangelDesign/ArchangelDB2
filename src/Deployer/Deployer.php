@@ -12,12 +12,13 @@ namespace ArchangelDB;
  * Class Deployer
  * @package ArchangelDB
  */
-class Deployer
+class Deployer extends AbstractDeployer
 {
     private $_deployFile = null;
     private $_deployFileName = null;
+    private $_currentVersion = null;
 
-    public function __construct(ArchangelDB\ADB2 $adb, $filename = null)
+    public function __construct(ADB2 $adb, $filename = null)
     {
         $this->_adb = $adb;
         if ($filename === null) {
@@ -25,7 +26,7 @@ class Deployer
         }
 
         if (!file_exists($filename)) {
-            throw new \Exception("Deployment file not found");
+            throw new \Exception("Deployment file not found in $filename");
         }
         // @todo: replace with fread to allow big data files
         // for now it is only for table structure and maybe some sample data
@@ -54,6 +55,10 @@ class Deployer
         }
 
         $data = new \SimpleXMLElement($this->_deployFile);
+
+        if (!$this->_currentVersion) {
+            $this->_currentVersion = $this->getDatabaseVersion();
+        }
         print (print_r($data));
     }
 

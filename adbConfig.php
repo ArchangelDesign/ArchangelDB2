@@ -13,7 +13,7 @@
 
 return [
     'driver' => 'mysqli',
-    'database' => 'lop2',
+    'database' => 'lop',
     'username' => 'admin',
     'password' => 'admin',
     'prefix' => 'lop_', // not required, prefix to all tables added automatically
