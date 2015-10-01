@@ -58,6 +58,8 @@ if (!$adb->columnExists('users', 'surname')) {
     goDead("columnExists(surname) failed.");
 }
 
+print("[OK] all well so far.\n");
+
 if (!$adb->columnExists('users', 'date')) {
     goDead("columnExists(date) failed.");
 }
@@ -79,6 +81,9 @@ if (!isset($testData['name']) || !isset($testData['surname']) || !isset($testDat
 if ($testData['name'] != 'Archangel' || $testData['surname'] != 'Design' || $testData['date'] != '791') {
     goDead("fetchOne returned unexpected data.");
 }
+
+print("[OK] insert works fine.\n");
+
 // to lowercase
 print("testing updates...\n");
 $testData['surname'] = 'design';
@@ -95,6 +100,8 @@ if ($testData['surname'] != 'design') {
     goDead("Update test failed.\n");
 }
 
+print("[OK] updates work fine.\n");
+
 print("running fetchList test...\n");
 $adb->deleteRocords('users', ['1' => '1']);
 $adb->insert('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
@@ -110,6 +117,28 @@ if (array_shift($list) !== 'Archangel') {
 
 if (array_shift($list) !== 'Design') {
     goDead("fetchList failed");
+}
+
+print("[OK] fetchList works fine.\n");
+
+if ($adb->isStorageEnabled()) {
+    print("testing stored queries...\n");
+    print('dropping data...\n');
+    $adb->deleteRocords('users', ['1' => '1']);
+    print('testing insert...\n');
+    $adb->sql('insert-test', ['a', 'b', '2']);
+    print('fetching...\n');
+    $res = $adb->sql('fetch-test', [2]);
+    if (empty($res)) {
+        goDead("stored query insert or fetch failed.");
+    }
+    print("testing delete...\n");
+    $adb->sql('delete-test', [2]);
+    $all = $adb->fetchAll('users');
+    if (!empty($all)) {
+        goDead("stored delete query failed.");
+    }
+    print("[OK] storage engine seems well.\n");
 }
 
 print("Test sequence completed.\n\n");

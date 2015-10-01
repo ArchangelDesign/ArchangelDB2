@@ -12,6 +12,7 @@
 namespace ArchangelDB;
 
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\Exception\ErrorException;
 use Zend\Db\ResultSet\ResultSet;
 
 /**
@@ -510,5 +511,60 @@ class ADB2 implements ADB2Interface
     public function rollbackTransaction()
     {
         $this->_driver->getConnection()->rollback();
+    }
+
+    public function runStoredQuery($name, array $params = [])
+    {
+        if (!isset($this->_conf['enable-storage'])) {
+            throw new ErrorException(
+                "Stored queries are not enabled. "
+                . "You can enable it in config file."
+            );
+        }
+
+        if (!isset($this->_conf['storage-dir'])) {
+            throw new ErrorException(
+                "No storage dir set. You need to set it in config file."
+            );
+        }
+
+        if (!is_dir($this->_conf['storage-dir'])) {
+            throw new  ErrorException(
+                "Storage directory is not valid."
+            );
+        }
+
+        $path = $this->_conf['storage-dir'] . '/' . $name . '.sql';
+
+        if (!file_exists($path)) {
+            throw new ErrorException(
+                "Required stored query could not be found."
+            );
+        }
+
+        $query = file_get_contents($path);
+
+        return $this->executePreparedQuery($query, $params);
+    }
+
+    public function rsq($name, array $params = [])
+    {
+        return $this->runStoredQuery($name, $params);
+    }
+
+    public function sql($name, array $params = [])
+    {
+        return $this->runStoredQuery($name, $params);
+    }
+
+    public function isStorageEnabled()
+    {
+        if (!isset($this->_conf['enable-storage'])) {
+            return false;
+        }
+        if (!$this->_conf['enable-storage']) {
+            return false;
+        }
+        return true;
     }
 }

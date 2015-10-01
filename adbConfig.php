@@ -16,10 +16,15 @@ return [
     'database' => 'lop',
     'username' => 'admin',
     'password' => 'admin',
-    'prefix' => 'lop_', // not required, prefix to all tables added automatically
+    'prefix' => 'lop_', // not required, prefix added to all tables (automatically)
     'profiler' => true, // recommended, if disabled some methods will not return results (like getLastQuery())
-    'allow_drop' => true, // if false or not set, no drop action is allowed
+    'allow_drop' => true, // if false or not set, no drop command is allowed
     'deploy-file' => 'database-structure.xml',
+    'storage-dir' => __DIR__ . '/storage',
+    'enable-cache' => true,
+    'enable-storage' => true, // enables use of queries stored in files
+    'allow-deploy' => true, // whether to allow ADB to create the database, defaults to true
+    'cache-dir' => __DIR__ . '/cache',
     'options' => [
         'buffer_results' => true, // required for mysql and pgsql
         // if enabled, all results will be buffered. This option is required for ADB to work

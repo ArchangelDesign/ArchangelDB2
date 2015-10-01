@@ -5,5 +5,5 @@
  */
 
 // no need to configure this module
-return array();
+return [];
 
