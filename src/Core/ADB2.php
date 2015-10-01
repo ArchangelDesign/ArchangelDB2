@@ -191,7 +191,7 @@ class ADB2 implements ADB2Interface
      * @param $table
      * @param array $conditions
      * @param $column
-     * @return null
+     * @return string
      */
     public function fetchSingleValue($table, array $conditions, $column)
     {
@@ -200,6 +200,21 @@ class ADB2 implements ADB2Interface
             return null;
         }
         return $buf[$column];
+    }
+
+    /**
+     * Fetches selected row as comma separated string
+     *
+     * @param       $table
+     * @param       $column
+     * @param array $conditions
+     * @return string
+     */
+    public function fetchList($table, $column,  array $conditions = [])
+    {
+        $buffer = $this->fetchAll($table, $conditions, $column);
+        $array = array_column($buffer, $column);
+        return implode(',', $array);
     }
 
     /**
