@@ -83,6 +83,12 @@ class ADB2 implements ADB2Interface
      */
     private function fixTableNames($table)
     {
+        if (strpos($table, '{') === false && strpos($table, ' ') === false) {
+            if (strpos($table, $this->_conf['prefix']) === 0) {
+                return $table;
+            }
+            return $this->_conf['prefix'] . $table;
+        }
         $res = preg_replace('/\{(?=\w+\})/', $this->_conf['prefix'], $table);
         return str_replace('}', '', $res);
     }
@@ -439,7 +445,7 @@ class ADB2 implements ADB2Interface
      */
     public function insertTable($tableName, array $columns, $options = null, $keys = null)
     {
-        $tname = $this->fixTableName($tableName);
+        $tname = '{' . $tableName . '}';
         $cols = [];
         foreach ($columns as $name => $definition) {
             $notNull = isset($definition['notnull'])?'not null':'';
@@ -452,18 +458,17 @@ class ADB2 implements ADB2Interface
     }
 
     /**
-     * Checks id table exists
+     * Checks if table exists
      * @param $tableName
      * @return bool
      */
     public function tableExists($tableName)
     {
-        try {
-            $this->executeRawQuery('select 1 from {'.$tableName.'}');
-        } catch (\Exception $e) {
-            return false;
+        $res = $this->executeRawQuery('show tables like \'{'.$tableName.'}\'')->toArray();
+        if (count($res) > 0) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     /**

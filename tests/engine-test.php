@@ -22,8 +22,8 @@ try {
 }
 
 $path = dirname(__DIR__) . '/database-structure.xml';
-$deployer = new \ArchangelDB\Deployer($adb, $path);
-$deployer->deployDatabaseStructure();
+//$deployer = new \ArchangelDB\Deployer($adb, $path);
+//$deployer->deployDatabaseStructure();
 
 if (!$adb->tableExists('users')) {
     $adb->insertTable('users',
