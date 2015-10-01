@@ -86,13 +86,30 @@ unset($testData['id']);
 $adb->updateRecords('users', $testData, 'name');
 
 $testData = $adb->fetchOne('users', ['surname' => 'design']);
-print(print_r($testData, true));
+
 if (!$testData) {
     goDead('Update test failed.');
 }
 
 if ($testData['surname'] != 'design') {
     goDead("Update test failed.\n");
+}
+
+print("running fetchList test...\n");
+$adb->deleteRocords('users', ['1' => '1']);
+$adb->insert('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
+$adb->insert('users', ['name' => 'Design', 'surname' => 'Design', 'date' => '791']);
+$list = $adb->fetchList('users', 'name');
+$list = explode(',', $list);
+if (count($list) !== 2) {
+    goDead("fetchList failed.");
+}
+if (array_shift($list) !== 'Archangel') {
+    goDead("fetchList failed.");
+}
+
+if (array_shift($list) !== 'Design') {
+    goDead("fetchList failed");
 }
 
 print("Test sequence completed.\n\n");
