@@ -123,11 +123,11 @@ print("[OK] fetchList works fine.\n");
 
 if ($adb->isStorageEnabled()) {
     print("testing stored queries...\n");
-    print('dropping data...\n');
+    print("dropping data...\n");
     $adb->deleteRocords('users', ['1' => '1']);
-    print('testing insert...\n');
+    print("testing insert...\n");
     $adb->sql('insert-test', ['a', 'b', '2']);
-    print('fetching...\n');
+    print("fetching...\n");
     $res = $adb->sql('fetch-test', [2]);
     if (empty($res)) {
         goDead("stored query insert or fetch failed.");
@@ -140,6 +140,12 @@ if ($adb->isStorageEnabled()) {
     }
     print("[OK] storage engine seems well.\n");
 }
+
+print("testing cache...\n");
+if (!$adb->getConfigValue('enable-cache')) {
+    goDead("Cache is not enabled. Can not continue.");
+}
+
 
 print("Test sequence completed.\n\n");
 print("****** SUCCESS ******\n\n\n");
