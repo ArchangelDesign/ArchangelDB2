@@ -70,9 +70,15 @@ class ADB2 implements ADB2Interface
     private function createCacheKey($table, array $conditions, $columns)
     {
         $input = $table . json_encode($conditions) . $columns;
-        return md5($input);
+        return $table . '-' . md5($input);
     }
 
+    /**
+     * @param null $hash
+     *
+     * @return string
+     * @throws ErrorException
+     */
     private function getCacheDir($hash = null)
     {
         if (!isset($this->_conf['cache-dir']) || empty($this->_conf['cache-dir'])) {
@@ -85,6 +91,11 @@ class ADB2 implements ADB2Interface
         return $dir . '/' . $hash;
     }
 
+    /**
+     * @param string $hash
+     *
+     * @return bool|string
+     */
     private function cacheExists($hash)
     {
         $dir = $this->_conf['cache-dir'];
@@ -97,18 +108,39 @@ class ADB2 implements ADB2Interface
         }
     }
 
+    /**
+     * @param       $table
+     * @param array $conditions
+     * @param       $columns
+     *
+     * @return array|null
+     */
     private function fetchFromCache($table, array $conditions, $columns)
     {
         if (isset($this->_conf['enable-cache']) && $this->_conf['enable-cache']) {
             $hash = $this->createCacheKey($table, $conditions, $columns);
-            if (!$this->cacheExists($hash)) {
+            if (!$path = $this->cacheExists($hash)) {
                 return null;
             }
+            $fsize = filesize($path);
+            $handle = fopen($path, "r");
+            $data = fread($handle, $fsize);
+            fclose($handle);
+            return json_decode($data, true);
         } else {
             return null;
         }
     }
 
+    /**
+     * @param       $table
+     * @param array $conditions
+     * @param       $columns
+     * @param array $data
+     *
+     * @return null|string
+     * @throws ErrorException
+     */
     private function storeInCache($table, array $conditions, $columns, array $data)
     {
         if (isset($this->_conf['enable-cache']) && $this->_conf['enable-cache']) {
@@ -127,6 +159,13 @@ class ADB2 implements ADB2Interface
         }
     }
 
+    /**
+     * @param       $table
+     * @param array $conditions
+     * @param       $column
+     *
+     * @return bool
+     */
     private function clearCachedResult($table, array $conditions, $column)
     {
         if (isset($this->_conf['enable-cache']) && $this->_conf['enable-cache']) {
@@ -135,8 +174,23 @@ class ADB2 implements ADB2Interface
                 return unlink($path);
             }
         } else {
-            return null;
+            return true;
         }
+    }
+
+    /**
+     * @param $table
+     *
+     * @return array
+     * @throws ErrorException
+     */
+    private function clearTableCache($table)
+    {
+        if (!$this->getConfigValue('enable-cache')) {
+            return;
+        }
+        $dir = $this->getCacheDir();
+        return array_map('unlink', glob("$dir/$table*"));
     }
 
     /**
@@ -183,6 +237,9 @@ class ADB2 implements ADB2Interface
         return $this->fixTableNames($tableName);
     }
 
+    /**
+     * @return bool
+     */
     private function isDropAllowed()
     {
         if (isset($this->_conf['allow_drop'])) {
@@ -194,6 +251,59 @@ class ADB2 implements ADB2Interface
     }
 
     /**
+     * @return array|bool
+     * @throws ErrorException
+     */
+    private function dropCache()
+    {
+        if (!$this->getConfigValue('enable-cache')) {
+            return false;
+        }
+        $dir = $this->getCacheDir();
+        return array_map('unlink', glob("$dir/*"));
+    }
+
+    /**
+     * @param $query
+     *
+     * @return bool|array
+     */
+    private function safeDropCache($query)
+    {
+        if (preg_match('/(update|delete|insert)', strtolower($query)) == 1) {
+            // @todo: clear cache only for given tables
+            return $this->dropCache();
+        }
+        return false;
+    }
+
+    /**
+     * @return array|bool
+     */
+    public function purgeAllCaches()
+    {
+        return $this->dropCache();
+    }
+
+    /**
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->_conf;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return mixed|null
+     */
+    public function getConfigValue($name)
+    {
+        return isset($this->_conf[$name])?$this->_conf[$name]:null;
+    }
+
+    /**
      * Simple query executor, expects results and returns them as an assoc array
      * @param $query
      * @param array $params
@@ -202,6 +312,7 @@ class ADB2 implements ADB2Interface
     public function executeRawQuery($query, array $params = array())
     {
         $this->result = $this->_adapter->query($this->fixTableName($query), $params);
+        $this->safeDropCache($query);
         return $this->result;
     }
 
@@ -216,7 +327,7 @@ class ADB2 implements ADB2Interface
         try {
             $statement = $this->_adapter->createStatement($this->fixTableName($query));
             $res = $statement->execute($params);
-
+            $this->safeDropCache($query);
         } catch (\Exception $e) {
             return false;
         }
@@ -415,6 +526,7 @@ class ADB2 implements ADB2Interface
         $columns = implode(',', $columns);
         $params = implode(',', $params);
         $query = "insert into $table($columns) values($params)";
+        $this->clearTableCache($table);
         return $this->executeRawQuery($query, $values);
     }
 
@@ -436,6 +548,7 @@ class ADB2 implements ADB2Interface
         $params = implode(' and ', $params);
         $query = "delete from $table where $params";
         $this->executeRawQuery($query, $values);
+        $this->clearTableCache($table);
         return $this->result->getAffectedRows();
     }
 
@@ -461,6 +574,7 @@ class ADB2 implements ADB2Interface
         if (!empty($buffer)) {
             return false;
         }
+        $this->clearTableCache($table);
         return $this->executeRawQuery($query, $values);
     }
 
@@ -507,6 +621,7 @@ class ADB2 implements ADB2Interface
         $fields[] = $uniqueKeyValue;
         $query = "update $tableName set $keys where $uniqueKey = ?";
         $this->executeRawQuery($query, $fields)->count();
+        $this->clearTableCache($tableName);
         return $this->result->getAffectedRows();
     }
     /**
@@ -517,6 +632,7 @@ class ADB2 implements ADB2Interface
     public function dropTable($table)
     {
         if ($this->isDropAllowed()) {
+            $this->clearTableCache($table);
             return $this->executeRawQuery('drop table {' . $table . '}');
         } else {
             return false;
@@ -630,6 +746,7 @@ class ADB2 implements ADB2Interface
 
         $query = file_get_contents($path);
 
+        $this->safeDropCache($query);
         return $this->executePreparedQuery($query, $params);
     }
 
