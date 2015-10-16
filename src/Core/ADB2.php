@@ -61,6 +61,56 @@ class ADB2 implements ADB2Interface
     }
 
     /**
+     * @param       $table
+     * @param array $conditions
+     * @param       $columns
+     *
+     * @return string
+     */
+    private function createCacheKey($table, array $conditions, $columns)
+    {
+        $input = $table . json_encode($conditions) . $columns;
+        return md5($input);
+    }
+
+    private function cacheExists($hash)
+    {
+        $dir = $this->_conf['cache-dir'];
+        $fname = $dir . '/' . $hash;
+        if (file_exists($fname)) {
+            $time = filemtime($fname);
+        } else {
+            return false;
+        }
+    }
+
+    private function fetchFromCache($table, array $conditions, $columns)
+    {
+        if (isset($this->_conf['enable-cache']) && $this->_conf['enable-cache']) {
+            $hash = $this->createCacheKey($table, $conditions, $columns);
+            if (!$this->cacheExists($hash)) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    private function storeInCache($table, array $conditions, $columns, array $data)
+    {
+        if (isset($this->_conf['enable-cache']) && $this->_conf['enable-cache']) {
+
+        } else {
+            return null;
+        }
+    }
+
+    private function clearCachedResult($table, array $conditions, $column)
+    {
+        
+    }
+
+    /**
      * Check consistency, if there is anything missing, try to deploy it
      */
     private function checkAndDeploy()
@@ -164,6 +214,11 @@ class ADB2 implements ADB2Interface
      */
     public function fetchAll($table, array $conditions = [], $columns = '*')
     {
+        $cachedResult = $this->fetchFromCache($table, $conditions, $columns);
+        if ($cachedResult !== null && is_array($cachedResult)) {
+            return $cachedResult;
+        }
+
         $table = $this->_conf['prefix'] . $table;
         $query = "select $columns from $table ";
         if (!empty($conditions)) {
@@ -176,7 +231,9 @@ class ADB2 implements ADB2Interface
             }
             $query .= implode(' and ', $cond);
         } else { $vals = [];}
-        return $this->executeRawQuery($query, $vals)->toArray();
+        $data = $this->executeRawQuery($query, $vals)->toArray();
+        $this->storeInCache($table, $conditions, $columns, $data);
+        return $data;
     }
 
     /**
