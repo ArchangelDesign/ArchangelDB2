@@ -73,12 +73,25 @@ class ADB2 implements ADB2Interface
         return md5($input);
     }
 
+    private function getCacheDir($hash = null)
+    {
+        if (!isset($this->_conf['cache-dir']) || empty($this->_conf['cache-dir'])) {
+            throw new ErrorException("Cache directory is not set.");
+        }
+        $dir = $this->_conf['cache-dir'];
+        if ($hash === null) {
+            return $dir;
+        }
+        return $dir . '/' . $hash;
+    }
+
     private function cacheExists($hash)
     {
         $dir = $this->_conf['cache-dir'];
         $fname = $dir . '/' . $hash;
         if (file_exists($fname)) {
             $time = filemtime($fname);
+            return $fname;
         } else {
             return false;
         }
@@ -99,7 +112,16 @@ class ADB2 implements ADB2Interface
     private function storeInCache($table, array $conditions, $columns, array $data)
     {
         if (isset($this->_conf['enable-cache']) && $this->_conf['enable-cache']) {
-
+            $hash = $this->createCacheKey($table, $conditions, $columns);
+            if ($path = $this->cacheExists($hash)) {
+                unlink($path);
+            }
+            $path = $this->getCacheDir($hash);
+            $file = fopen($path, "w+");
+            $d = json_encode($data);
+            fwrite($file, $d, strlen($d));
+            fclose($file);
+            return $d;
         } else {
             return null;
         }
@@ -107,7 +129,14 @@ class ADB2 implements ADB2Interface
 
     private function clearCachedResult($table, array $conditions, $column)
     {
-        
+        if (isset($this->_conf['enable-cache']) && $this->_conf['enable-cache']) {
+            $hash = $this->createCacheKey($table, $conditions, $column);
+            if ($path = $this->cacheExists($hash)) {
+                return unlink($path);
+            }
+        } else {
+            return null;
+        }
     }
 
     /**
