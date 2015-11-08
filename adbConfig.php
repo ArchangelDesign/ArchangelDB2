@@ -25,6 +25,7 @@ return [
     'enable-storage' => true, // enables use of queries stored in files
     'allow-deploy' => true, // whether to allow ADB to create the database, defaults to true
     'cache-dir' => __DIR__ . '/cache',
+    'error-log-file' => __DIR__ . '/error.log',
     'options' => [
         'buffer_results' => true, // required for mysql and pgsql
         // if enabled, all results will be buffered. This option is required for ADB to work

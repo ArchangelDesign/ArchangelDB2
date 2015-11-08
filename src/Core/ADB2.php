@@ -46,6 +46,10 @@ class ADB2 implements ADB2Interface
     public function __construct($config = null)
     {
         $this->_conf = ConfigLoader::getConfig($config);
+        if (!isset($this->_conf['error-log-file']) || empty($this->_conf['error-log-file'])) {
+            throw new \Exception("Error log file needs to be set. Chack your config file.");
+        }
+        ini_set("error_log", $this->_conf['error-log-file']);
         if (!isset($this->_conf['prefix'])) {
             $this->_conf['prefix'] = '';
         }
@@ -270,7 +274,7 @@ class ADB2 implements ADB2Interface
      */
     private function safeDropCache($query)
     {
-        if (preg_match('/(update|delete|insert)', strtolower($query)) == 1) {
+        if (preg_match('/(update|delete|insert)/', strtolower($query)) == 1) {
             // @todo: clear cache only for given tables
             return $this->dropCache();
         }
@@ -311,7 +315,15 @@ class ADB2 implements ADB2Interface
      */
     public function executeRawQuery($query, array $params = array())
     {
-        $this->result = $this->_adapter->query($this->fixTableName($query), $params);
+        try {
+            $this->result = $this->_adapter->query($this->fixTableName($query), $params);
+        } catch (\Exception $e) {
+            $this->result = new ResultSet(ResultSet::TYPE_ARRAY, []);
+            error_log("ERROR: ADB : executeRawQuery");
+            error_log("query: $query");
+            error_log("params: " . print_r($params, true));
+            error_log($e->getTraceAsString());
+        }
         $this->safeDropCache($query);
         return $this->result;
     }
@@ -370,8 +382,19 @@ class ADB2 implements ADB2Interface
                 $vals[] = $condition;
             }
             $query .= implode(' and ', $cond);
-        } else { $vals = [];}
-        $data = $this->executeRawQuery($query, $vals)->toArray();
+        } else {
+            $vals = [];
+        }
+        try {
+            $buffer = $this->executeRawQuery($query, $vals);
+            if (@$buffer->valid()) {
+                $data = $buffer->toArray();
+            } else {
+                return [];
+            }
+        } catch (\Exception $e) {
+            return [];
+        }
         $this->storeInCache($table, $conditions, $columns, $data);
         return $data;
     }

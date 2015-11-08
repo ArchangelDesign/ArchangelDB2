@@ -18,7 +18,7 @@ function goDead($msg) {
 try {
     $adb = new \ArchangelDB\ADB2();
 } catch (Exception $e) {
-    print "Failed to create ADB \n"; die();
+    print "Failed to create ADB \n".$e->getMessage(); die();
 }
 
 $path = dirname(__DIR__) . '/database-structure.xml';
@@ -146,6 +146,9 @@ if (!$adb->getConfigValue('enable-cache')) {
     goDead("Cache is not enabled. Can not continue.");
 }
 
+print("error handling tests...\n");
+$adb->executeRawQuery("select * from nonexistingtable where a=1");
+$adb->fetchAll('nonexistingtable', ['od' => 'do']);
 
 print("Test sequence completed.\n\n");
 print("****** SUCCESS ******\n\n\n");
