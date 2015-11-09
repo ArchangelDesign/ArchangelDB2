@@ -1,4 +1,4 @@
-# ArchangelDB module for Zend Framework 2
+# ArchangelDB module for PHP 5.5 application
 ## copyright (c) www.archangel-design.com
 
 ** Simple but powerful PHP Database Engine **
@@ -6,6 +6,7 @@
 Another version of Archangel DB introduces much more than the previous one.
 This time not only allowing transaction and prepared statements but also
 compatible with Postgres, Oracle, Sqlite, SQLServer and IBM DB2.
+Built-in cache system and error log, easy error handling and deployment.
 
 Designed for Zend Framework 2 (using Zend\DB module) but can be implemented
 in every PHP 5.5 project.
@@ -45,6 +46,14 @@ $adb->deleteRecords('users', ['deleted' => 1]);
 
 $adb->insert('user', ['name' => 'Archangel', 'surname' => 'Design', 'deleted' => 0]);
 // user has been inserted to table users
+
+$adb->updateRecords('user',
+[
+    'name' ='Archangel', 
+    'surname' = 'System', 
+    'deleted' => 1
+], 'name');
+// record with name = 'Archangel' has been updated (or multiple records)
 
 $idList = $adb->fetchList('users', 'id', ['deleted' => 1]);
 // returns comma separated list of id as string ( like "1,2,3,4,5")
