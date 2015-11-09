@@ -13,6 +13,7 @@ namespace ArchangelDB;
 
 use Zend\Db\Adapter\Adapter;
 use Zend\Db\Exception\ErrorException;
+use Zend\Db\Exception\InvalidArgumentException;
 use Zend\Db\ResultSet\ResultSet;
 
 /**
@@ -561,6 +562,9 @@ class ADB2 implements ADB2Interface
      */
     public function deleteRocords($table, array $conditions)
     {
+        if (empty($conditions)) {
+            throw new InvalidArgumentException("Conditions can not be empty.");
+        }
         $values = [];
         $params = [];
         $table = "{".$table."}";
