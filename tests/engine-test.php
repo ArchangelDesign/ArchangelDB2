@@ -10,7 +10,7 @@ print "Testing ADB2...\n";
 require '../autoload_register.php';
 
 function goDead($msg) {
-    print("====== FAILED ======");
+    print("====== FAILED ======\n");
     print($msg."\n");
     die;
 }
@@ -22,8 +22,6 @@ try {
 }
 
 $path = dirname(__DIR__) . '/database-structure.xml';
-//$deployer = new \ArchangelDB\Deployer($adb, $path);
-//$deployer->deployDatabaseStructure();
 
 if (!$adb->tableExists('users')) {
     $adb->insertTable('users',
@@ -84,7 +82,9 @@ if ($testData['name'] != 'Archangel' || $testData['surname'] != 'Design' || $tes
 
 print("[OK] insert works fine.\n");
 
-// to lowercase
+/**
+ * ===== UPDATE TEST =====
+ */
 print("testing updates...\n");
 $testData['surname'] = 'design';
 unset($testData['id']);
@@ -100,7 +100,27 @@ if ($testData['surname'] != 'design') {
     goDead("Update test failed.\n");
 }
 
+$adb->deleteRocords('users', [1 => 1]);
+$adb->insert('users', ['name' => 'Archangel', 'date' => '1']);
+$adb->insert('users', ['name' => 'Design', 'date' => '1']);
+$adb->updateRecords('users', ['name' => 'theName', 'surname' => 'theSurname', 'date' => '1'], 'date');
+$records = $adb->fetchAll('users');
+
+if (count($records) !== 2) {
+    goDead("update failed. Wrong amount of records returned.");
+}
+
+foreach ($records as $record) {
+    if ($record['name'] !== 'theName' || $record['surname'] !== 'theSurname') {
+        goDead("update failed. Wrong data returned. " . print_r($records, true));
+    }
+}
+
 print("[OK] updates work fine.\n");
+
+/**
+ *  ===== FETCH LIST =====
+ */
 
 print("running fetchList test...\n");
 $adb->deleteRocords('users', ['1' => '1']);
@@ -121,6 +141,9 @@ if (array_shift($list) !== 'Design') {
 
 print("[OK] fetchList works fine.\n");
 
+/**
+ * ===== STORED QUERIES =====
+ */
 if ($adb->isStorageEnabled()) {
     print("testing stored queries...\n");
     print("dropping data...\n");
@@ -147,8 +170,12 @@ if (!$adb->getConfigValue('enable-cache')) {
 }
 
 print("error handling tests...\n");
-$adb->executeRawQuery("select * from nonexistingtable where a=1");
-$adb->fetchAll('nonexistingtable', ['od' => 'do']);
+try {
+    $adb->executeRawQuery("select * from nonexistingtable where a=1");
+    $adb->fetchAll('nonexistingtable', ['od' => 'do']);
+} catch (Exception $e) {
+    goDead("error handling test failed.");
+}
 
 print("Test sequence completed.\n\n");
 print("****** SUCCESS ******\n\n\n");
