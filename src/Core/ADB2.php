@@ -365,7 +365,8 @@ class ADB2 implements ADB2Interface
      * @param string $columns
      * @return array
      */
-    public function fetchAll($table, array $conditions = [], $columns = '*')
+    public function fetchAll($table, array $conditions = [], $columns = '*',
+        $orderColumn = null, $orderDirection = 'asc')
     {
         $cachedResult = $this->fetchFromCache($table, $conditions, $columns);
         if ($cachedResult !== null && is_array($cachedResult)) {
@@ -385,6 +386,9 @@ class ADB2 implements ADB2Interface
             $query .= implode(' and ', $cond);
         } else {
             $vals = [];
+        }
+        if ($orderColumn !== null) {
+            $query .= " order by $orderColumn $orderDirection";
         }
         try {
             $buffer = $this->executeRawQuery($query, $vals);
