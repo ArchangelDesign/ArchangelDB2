@@ -342,6 +342,11 @@ class ADB2 implements ADB2Interface
             $res = $statement->execute($params);
             $this->safeDropCache($query);
         } catch (\Exception $e) {
+            $this->result = new ResultSet(ResultSet::TYPE_ARRAY, []);
+            error_log("ERROR: ADB : executePreparedQuery");
+            error_log("query: $query");
+            error_log("params: " . print_r($params, true));
+            error_log($e->getTraceAsString());
             return false;
         }
         $this->result = $res;
@@ -581,6 +586,11 @@ class ADB2 implements ADB2Interface
         $this->executeRawQuery($query, $values);
         $this->clearTableCache($table);
         return $this->result->getAffectedRows();
+    }
+
+    public function delete($table, array $conditions)
+    {
+        return $this->deleteRocords($table, $conditions);
     }
 
     /**
