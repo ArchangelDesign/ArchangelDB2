@@ -571,9 +571,9 @@ class ADB2 implements ADB2Interface
      * Deleted one or more records from given table
      * @param $table
      * @param array $conditions
-     * @return int amout of deleted records
+     * @return int amount of deleted records
      */
-    public function deleteRocords($table, array $conditions)
+    public function deleteRecords($table, array $conditions)
     {
         if (empty($conditions)) {
             throw new InvalidArgumentException("Conditions can not be empty.");
@@ -592,6 +592,13 @@ class ADB2 implements ADB2Interface
         return $this->result->getAffectedRows();
     }
 
+    /**
+     * Deletes one or more records
+     * @param       $table
+     * @param array $conditions
+     *
+     * @return int amount of deleted records
+     */
     public function delete($table, array $conditions)
     {
         return $this->deleteRocords($table, $conditions);
@@ -604,7 +611,7 @@ class ADB2 implements ADB2Interface
      * @param array $conditions
      * @return array|bool
      */
-    public function deleteSingleRocord($table, array $conditions)
+    public function deleteSingleRecord($table, array $conditions)
     {
         $values = [];
         $params = [];

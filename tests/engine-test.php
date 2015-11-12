@@ -63,7 +63,7 @@ if (!$adb->columnExists('users', 'date')) {
 }
 
 print("clearing table...\n");
-$adb->deleteRocords('users', ['1' => '1']);
+$adb->deleteRecords('users', ['1' => '1']);
 
 print("inserting record to users...\n");
 $adb->insert('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
@@ -100,7 +100,7 @@ if ($testData['surname'] != 'design') {
     goDead("Update test failed.\n");
 }
 
-$adb->deleteRocords('users', [1 => 1]);
+$adb->deleteRecords('users', [1 => 1]);
 $adb->insert('users', ['name' => 'Archangel', 'date' => '1']);
 $adb->insert('users', ['name' => 'Design', 'date' => '1']);
 $adb->updateRecords('users', ['name' => 'theName', 'surname' => 'theSurname', 'date' => '1'], 'date');
@@ -123,7 +123,7 @@ print("[OK] updates work fine.\n");
  */
 
 print("running fetchList test...\n");
-$adb->deleteRocords('users', ['1' => '1']);
+$adb->deleteRecords('users', ['1' => '1']);
 $adb->insert('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => '791']);
 $adb->insert('users', ['name' => 'Design', 'surname' => 'Design', 'date' => '791']);
 $list = $adb->fetchList('users', 'name');
@@ -147,7 +147,7 @@ print("[OK] fetchList works fine.\n");
 if ($adb->isStorageEnabled()) {
     print("testing stored queries...\n");
     print("dropping data...\n");
-    $adb->deleteRocords('users', ['1' => '1']);
+    $adb->deleteRecords('users', ['1' => '1']);
     print("testing insert...\n");
     $adb->sql('insert-test', ['a', 'b', '2']);
     print("fetching...\n");

@@ -26,8 +26,9 @@ interface ADB2Interface
     public function tableExists($tableName);
     public function insertTable($tableName, array $columns, $keys);
     public function dropTable($table);
-    public function deleteSingleRocord($table, array $conditions);
-    public function deleteRocords($table, array $conditions);
+    public function deleteSingleRecord($table, array $conditions);
+    public function deleteRecords($table, array $conditions);
+    public function delete($table, array $conditions);
     public function beginTransaction();
     public function commitTransaction();
     public function rollbackTransaction();
