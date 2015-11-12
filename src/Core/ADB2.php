@@ -601,7 +601,7 @@ class ADB2 implements ADB2Interface
      */
     public function delete($table, array $conditions)
     {
-        return $this->deleteRocords($table, $conditions);
+        return $this->deleteRecords($table, $conditions);
     }
 
     /**
@@ -676,6 +676,22 @@ class ADB2 implements ADB2Interface
         $this->clearTableCache($tableName);
         return $this->result->getAffectedRows();
     }
+
+    /**
+     * Updates record with given key value
+     * if no key value given, value of ID key is assumed
+     * if no key given and no ID defined, exception is thrown
+     * @param $tableName
+     * @param array $record
+     * @param null $uniqueKey
+     * @return mixed
+     * @throws \Exception
+     */
+    public function update($tableName, array $record, $uniqueKey = null)
+    {
+       return $this->updateRecords($tableName, $record, $uniqueKey);
+    }
+
     /**
      * Removes table from database
      * @param $table

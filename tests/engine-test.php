@@ -169,6 +169,35 @@ if (!$adb->getConfigValue('enable-cache')) {
     goDead("Cache is not enabled. Can not continue.");
 }
 
+$adb->delete('users', [1 => 1]);
+$adb->insert('users', ['name' => 'AD', 'surname' => 'DA', 'date' => 234]);
+$rec = $adb->fetchOne('users', ['date' => 234]);
+
+if ($rec['name'] !== 'AD' || $rec['surname'] !== 'DA') {
+    goDead("Wrong data returned");
+}
+// test twice
+$rec = $adb->fetchOne('users', ['date' => 234]);
+if ($rec['name'] !== 'AD' || $rec['surname'] !== 'DA') {
+    goDead("Wrong data returned");
+}
+
+$adb->update('users', ['name' => 'DD', 'surname' => 'AA', 'date' => 234], 'date');
+
+$rec = $adb->fetchOne('users', ['date' => 234]);
+if ($rec['name'] !== 'DD' || $rec['surname'] !== 'AA') {
+    goDead("Wrong data returned \n" . print_r($rec));
+}
+
+$adb->delete('users', ['date' => 234]);
+$rec = $adb->fetchAll('users');
+
+if (!empty($rec)) {
+    goDead("Cache returned out-of-date data");
+}
+
+print("[OK] cache system works fine.\n");
+
 print("error handling tests...\n");
 try {
     $adb->executeRawQuery("select * from nonexistingtable where a=1");
@@ -176,6 +205,37 @@ try {
 } catch (Exception $e) {
     goDead("error handling test failed.");
 }
+
+print("[OK] error handling seems fine.\n");
+
+print("running stress test...\n");
+$totalRecords = 100;
+$multiplier = $totalRecords / 10;
+$i = $totalRecords;
+$percent = 0;
+print('00%');
+while ($i > 0) {
+    $adb->insert('users', ['name' => 'Archangel', 'surname' => 'Design', 'date' => $i]);
+    $i--;
+    if ($i % $multiplier == 0) {
+        $percent += 10;
+        print("\x08\x08\x08$percent%");
+    }
+}
+print("\n");
+
+$data = $adb->fetchAll('users', [], 'date', 'date', 'desc');
+if (count($data) != $totalRecords) {
+    goDead("Invalid number of records ".count($data));
+}
+
+print("[OK] record count correct.\n");
+$firstOne = array_shift($data);
+
+if ($firstOne['date'] != $totalRecords) {
+    goDead("It seems that sorting does not work properly. ($firstOne[date])");
+}
+print("[OK] sorting correct.\n");
 
 print("Test sequence completed.\n\n");
 print("****** SUCCESS ******\n\n\n");
