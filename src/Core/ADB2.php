@@ -420,7 +420,11 @@ class ADB2 implements ADB2Interface
     public function fetchOne($table, array $conditions = [], $columns = '*')
     {
         $result = $this->fetchAll($table, $conditions, $columns);
-        return array_shift($result);
+        if (is_array($result)) {
+            return array_shift($result);
+        } else {
+            return $result;
+        }
     }
 
     /**
