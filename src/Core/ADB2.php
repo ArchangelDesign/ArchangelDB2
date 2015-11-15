@@ -708,6 +708,8 @@ class ADB2 implements ADB2Interface
     }
 
     /**
+     * Will be made private in next version
+     *
      * @param $tableName
      * @param $columns
      * @param null $options
@@ -726,6 +728,18 @@ class ADB2 implements ADB2Interface
         $colsDefs = implode(',', $cols);
         $this->executeRawQuery("create table $tname ($colsDefs)");
         return true;
+    }
+
+    /**
+     * @param $tableName
+     * @param $columns
+     * @param null $options
+     * @param null $keys
+     * @return bool
+     */
+    public function createTable($tableName, array $columns, $options = null, $keys = null)
+    {
+        return $this->insertTable($tableName, $columns, $options, $keys);
     }
 
     /**
