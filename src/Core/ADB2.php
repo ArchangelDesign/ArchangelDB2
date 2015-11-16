@@ -47,8 +47,11 @@ class ADB2 implements ADB2Interface
     public function __construct($config = null)
     {
         $this->_conf = ConfigLoader::getConfig($config);
-        if (!isset($this->_conf['error-log-file']) || empty($this->_conf['error-log-file'])) {
-            throw new \Exception("Error log file needs to be set. Chack your config file.");
+        if (!isset($this->_conf['error-log-file'])
+            || empty($this->_conf['error-log-file'])) {
+            throw new \Exception(
+                "Error log file needs to be set. Check your config file."
+            );
         }
         ini_set("error_log", $this->_conf['error-log-file']);
         if (!isset($this->_conf['prefix'])) {
