@@ -24,7 +24,7 @@ interface ADB2Interface
     public function lastInsertId();
     public function columnExists($tableName, $columnName);
     public function tableExists($tableName);
-    public function insertTable($tableName, array $columns, $keys);
+    public function createTable($tableName, array $columns, $options = null, $keys = null);
     public function dropTable($table);
     public function deleteSingleRecord($table, array $conditions);
     public function deleteRecords($table, array $conditions);
