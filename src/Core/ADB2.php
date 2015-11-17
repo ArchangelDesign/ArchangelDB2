@@ -800,6 +800,16 @@ class ADB2 implements ADB2Interface
         $this->_driver->getConnection()->rollback();
     }
 
+    /**
+     * Runs query stored in a file
+     * by default it is in storage directory
+     *
+     * @param string $name
+     * @param array  $params
+     *
+     * @return array|bool|int
+     * @throws ErrorException
+     */
     public function runStoredQuery($name, array $params = [])
     {
         if (!isset($this->_conf['enable-storage'])) {
@@ -835,16 +845,41 @@ class ADB2 implements ADB2Interface
         return $this->executePreparedQuery($query, $params);
     }
 
+    /**
+     * Runs query stored in a file
+     * by default it is in storage directory
+     *
+     * @param string $name
+     * @param array  $params
+     *
+     * @return array|bool|int
+     * @throws ErrorException
+     */
     public function rsq($name, array $params = [])
     {
         return $this->runStoredQuery($name, $params);
     }
 
+    /**
+     * Runs query stored in a file
+     * by default it is in storage directory
+     *
+     * @param string $name
+     * @param array  $params
+     *
+     * @return array|bool|int
+     * @throws ErrorException
+     */
     public function sql($name, array $params = [])
     {
         return $this->runStoredQuery($name, $params);
     }
 
+    /**
+     * Returns true if storage is enabled
+     *
+     * @return bool
+     */
     public function isStorageEnabled()
     {
         if (!isset($this->_conf['enable-storage'])) {
