@@ -32,4 +32,7 @@ interface ADB2Interface
     public function beginTransaction();
     public function commitTransaction();
     public function rollbackTransaction();
+    public function rsq($name, array $params = []);
+    public function sql($name, array $params = []);
+    public function isStorageEnabled();
 }
