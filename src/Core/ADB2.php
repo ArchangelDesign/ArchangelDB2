@@ -316,6 +316,7 @@ class ADB2 implements ADB2Interface
      * @param $query
      * @param array $params
      * @return array
+     * @throws \Exception
      */
     public function executeRawQuery($query, array $params = array())
     {
@@ -327,6 +328,15 @@ class ADB2 implements ADB2Interface
             error_log("query: $query");
             error_log("params: " . print_r($params, true));
             error_log($e->getTraceAsString());
+            $throw = true;
+            if (isset($this->_conf['suppress-exceptions'])) {
+                if ($this->_conf['suppress-exceptions']) {
+                    $throw = false;
+                }
+            }
+            if ($throw) {
+                throw $e;
+            }
         }
         $this->safeDropCache($query);
         return $this->result;
