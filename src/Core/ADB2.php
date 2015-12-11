@@ -324,6 +324,7 @@ class ADB2 implements ADB2Interface
         } catch (\Exception $e) {
             $this->result = new ResultSet(ResultSet::TYPE_ARRAY, []);
             error_log("ERROR: ADB : executeRawQuery");
+            error_log($e->getMessage());
             error_log("query: $query");
             error_log("params: " . print_r($params, true));
             error_log($e->getTraceAsString());
