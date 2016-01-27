@@ -326,7 +326,7 @@ class ADB2 implements ADB2Interface
             $this->result = new ResultSet(ResultSet::TYPE_ARRAY, []);
             $mysqli = $this->_adapter->getDriver()->getConnection()->getResource();
             error_log("ERROR: ADB : executeRawQuery");
-            error_log("Engine message: " . $mysqli->error);
+            error_log("Engine message: " . isset($mysqli->error)?$mysqli->error:"No message available");
             error_log($e->getMessage());
             error_log("query: $query");
             error_log("params: " . print_r($params, true));
@@ -338,7 +338,11 @@ class ADB2 implements ADB2Interface
                 }
             }
             if ($throw) {
-                throw $e;
+                if (isset($mysqli->error)) {
+                    throw new \Exception($mysqli->error);
+                } else {
+                    throw $e;
+                }
             }
         }
         $this->safeDropCache($query);
