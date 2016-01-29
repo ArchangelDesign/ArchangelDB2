@@ -571,7 +571,7 @@ class ADB2 implements ADB2Interface
      * Inserts single record to given table
      * @param $table
      * @param $record
-     * @return array
+     * @return int id of inserted record
      */
     public function insert($table, $record)
     {
@@ -588,7 +588,8 @@ class ADB2 implements ADB2Interface
         $params = implode(',', $params);
         $query = "insert into $table($columns) values($params)";
         $this->clearTableCache($table);
-        return $this->executeRawQuery($query, $values);
+        $this->executeRawQuery($query, $values);
+        return $this->lastInsertId();
     }
 
     /**
