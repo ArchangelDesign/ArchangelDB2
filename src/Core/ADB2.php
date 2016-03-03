@@ -320,6 +320,7 @@ class ADB2 implements ADB2Interface
      */
     public function executeRawQuery($query, array $params = array())
     {
+        $this->logQuery($query, $params);
         try {
             $this->result = $this->_adapter->query($this->fixTableName($query), $params);
         } catch (\Exception $e) {
@@ -911,5 +912,58 @@ class ADB2 implements ADB2Interface
             return false;
         }
         return true;
+    }
+
+    /**
+     * Stores query in a log file for later investigation if
+     * something happens with the database and you need to determine
+     * who is responsible
+     *
+     * @param $query
+     * @param array $params
+     */
+    private function logQuery($query, array $params = [])
+    {
+        if (!isset($this->_conf['query-log-file'])) {
+            return;
+        }
+
+        $fname = $this->_conf['query-log-file'];
+
+        $content = "[" . date('d-m-Y', time()) . "] ";
+        $content .= $this->getFullQuery($query, $params);
+        file_put_contents($fname, "", FILE_APPEND);
+    }
+
+    /**
+     * Returns query string built from arguments for prepared statement
+     *
+     * @param $query
+     * @param array $params
+     * @return string
+     */
+    private function getFullQuery($query, array $params = [])
+    {
+        $fullQuery = $query;
+
+        foreach ($params as $p) {
+            $fullQuery = $this->str_replace_first('?', $p, $fullQuery);
+        }
+
+        return $fullQuery;
+    }
+
+    /**
+     * Replace first occurrence only
+     *
+     * @param $from
+     * @param $to
+     * @param $subject
+     * @return mixed
+     */
+    private function str_replace_first($from, $to, $subject)
+    {
+        $from = '/'.preg_quote($from, '/').'/';
+        return preg_replace($from, $to, $subject, 1);
     }
 }
