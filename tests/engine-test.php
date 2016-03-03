@@ -199,14 +199,26 @@ if (!empty($rec)) {
 print("[OK] cache system works fine.\n");
 
 print("error handling tests...\n");
+if (isset($adb->getConfig()['suppress-exceptions'])) {
+    $supression = $adb->getConfig()['suppress-exceptions'];
+    print("Exception supression is " . ($supression ? " ON \n":" OFF \n"));
+} else {
+    $supression = false;
+    print("Exception supression is OFF\n");
+}
 try {
-    $adb->executeRawQuery("select * from nonexistingtable where a=1");
+    $adb->executeRawQuery("select * from {nonexistingtable} where a=1");
     $adb->fetchAll('nonexistingtable', ['od' => 'do']);
+    if (!$supression)
+        goDead("error handling test failed.");
 } catch (Exception $e) {
-    goDead("error handling test failed.");
+    if ($supression)
+        goDead("error handling test failed.");
 }
 
 print("[OK] error handling seems fine.\n");
+
+
 
 print("running stress test...\n");
 $totalRecords = 100;

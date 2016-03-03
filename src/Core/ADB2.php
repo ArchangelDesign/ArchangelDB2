@@ -320,7 +320,7 @@ class ADB2 implements ADB2Interface
      */
     public function executeRawQuery($query, array $params = array())
     {
-        $this->logQuery($query, $params);
+        $this->logQuery($this->fixTableName($query), $params);
         try {
             $this->result = $this->_adapter->query($this->fixTableName($query), $params);
         } catch (\Exception $e) {
@@ -357,11 +357,12 @@ class ADB2 implements ADB2Interface
     /**
      * Executes query with prepared statement
      * @param $query
-     * @param null $params
+     * @param array $params
      * @return array|bool|int
      */
-    public function executePreparedQuery($query, $params = null)
+    public function executePreparedQuery($query, array $params = [])
     {
+        $this->logQuery($query, $params);
         try {
             $statement = $this->_adapter->createStatement($this->fixTableName($query));
             $res = $statement->execute($params);
@@ -932,7 +933,8 @@ class ADB2 implements ADB2Interface
 
         $content = "[" . date('d-m-Y', time()) . "] ";
         $content .= $this->getFullQuery($query, $params);
-        file_put_contents($fname, "", FILE_APPEND);
+        $content .= "\n";
+        file_put_contents($fname, $content, FILE_APPEND);
     }
 
     /**
