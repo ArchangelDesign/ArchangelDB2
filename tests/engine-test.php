@@ -218,9 +218,23 @@ try {
 
 print("[OK] error handling seems fine.\n");
 
-
+print("single quote test...\n");
+try {
+    $adb->insert('users', ['name' => "Connan O'Bian"]);
+    $check = $adb->fetchOne('users', ['name' => "Connan O'Bian"]);
+    if (empty($check)) {
+        goDead("single quote test failed\n");
+    }
+    if ($check['name'] !== "Connan O'Bian") {
+        goDead("single quote test failed\n");
+    }
+} catch (Exception $e) {
+    goDead("single quote test failed\n");
+}
+print("single quote test passed\n");
 
 print("running stress test...\n");
+$adb->delete('users', ['1' => '1']);
 $totalRecords = 100;
 $multiplier = $totalRecords / 10;
 $i = $totalRecords;
