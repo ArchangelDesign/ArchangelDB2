@@ -358,6 +358,7 @@ class ADB2 implements ADB2Interface
      * @param $query
      * @param array $params
      * @return array|bool|int
+     * @deprecated
      */
     public function executePreparedQuery($query, array $params = [])
     {
