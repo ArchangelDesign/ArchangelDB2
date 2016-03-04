@@ -40,6 +40,19 @@ class ADB2 implements ADB2Interface
     public $result;
 
     /**
+     * current version of ADB
+     */
+    const ADB_VERSION = "2.1.15";
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return self::ADB_VERSION;
+    }
+
+    /**
      * @param null $config
      * @throws \Zend\Db\Exception\ErrorException
      * @throws \Exception
