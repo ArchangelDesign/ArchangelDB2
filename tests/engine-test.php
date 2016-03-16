@@ -199,16 +199,42 @@ if (!empty($rec)) {
 print("[OK] cache system works fine.\n");
 
 print("error handling tests...\n");
+if (isset($adb->getConfig()['suppress-exceptions'])) {
+    $supression = $adb->getConfig()['suppress-exceptions'];
+    print("Exception supression is " . ($supression ? " ON \n":" OFF \n"));
+} else {
+    $supression = false;
+    print("Exception supression is OFF\n");
+}
 try {
-    $adb->executeRawQuery("select * from nonexistingtable where a=1");
+    $adb->executeRawQuery("select * from {nonexistingtable} where a=1");
     $adb->fetchAll('nonexistingtable', ['od' => 'do']);
+    if (!$supression)
+        goDead("error handling test failed.");
 } catch (Exception $e) {
-    goDead("error handling test failed.");
+    if ($supression)
+        goDead("error handling test failed.");
 }
 
 print("[OK] error handling seems fine.\n");
 
+print("single quote test...\n");
+try {
+    $adb->insert('users', ['name' => "Connan O'Bian"]);
+    $check = $adb->fetchOne('users', ['name' => "Connan O'Bian"]);
+    if (empty($check)) {
+        goDead("single quote test failed\n");
+    }
+    if ($check['name'] !== "Connan O'Bian") {
+        goDead("single quote test failed\n");
+    }
+} catch (Exception $e) {
+    goDead("single quote test failed\n");
+}
+print("single quote test passed\n");
+
 print("running stress test...\n");
+$adb->delete('users', ['1' => '1']);
 $totalRecords = 100;
 $multiplier = $totalRecords / 10;
 $i = $totalRecords;

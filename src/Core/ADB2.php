@@ -40,6 +40,19 @@ class ADB2 implements ADB2Interface
     public $result;
 
     /**
+     * current version of ADB
+     */
+    const ADB_VERSION = "2.1.15";
+
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return self::ADB_VERSION;
+    }
+
+    /**
      * @param null $config
      * @throws \Zend\Db\Exception\ErrorException
      * @throws \Exception
@@ -320,6 +333,7 @@ class ADB2 implements ADB2Interface
      */
     public function executeRawQuery($query, array $params = array())
     {
+        $this->logQuery($this->fixTableName($query), $params);
         try {
             $this->result = $this->_adapter->query($this->fixTableName($query), $params);
         } catch (\Exception $e) {
@@ -328,8 +342,7 @@ class ADB2 implements ADB2Interface
             error_log("ERROR: ADB : executeRawQuery");
             error_log("Engine message: " . isset($mysqli->error)?$mysqli->error:"No message available");
             error_log($e->getMessage());
-            error_log("query: $query");
-            error_log("params: " . print_r($params, true));
+            error_log("query: " . $this->getFullQuery($query, $params));
             error_log($e->getTraceAsString());
             $throw = true;
             if (isset($this->_conf['suppress-exceptions'])) {
@@ -357,11 +370,13 @@ class ADB2 implements ADB2Interface
     /**
      * Executes query with prepared statement
      * @param $query
-     * @param null $params
+     * @param array $params
      * @return array|bool|int
+     * @deprecated
      */
-    public function executePreparedQuery($query, $params = null)
+    public function executePreparedQuery($query, array $params = [])
     {
+        $this->logQuery($query, $params);
         try {
             $statement = $this->_adapter->createStatement($this->fixTableName($query));
             $res = $statement->execute($params);
@@ -369,8 +384,7 @@ class ADB2 implements ADB2Interface
         } catch (\Exception $e) {
             $this->result = new ResultSet(ResultSet::TYPE_ARRAY, []);
             error_log("ERROR: ADB : executePreparedQuery");
-            error_log("query: $query");
-            error_log("params: " . print_r($params, true));
+            error_log("query: " . $this->getFullQuery($query, $params));
             error_log($e->getTraceAsString());
             return false;
         }
@@ -572,7 +586,7 @@ class ADB2 implements ADB2Interface
      * Inserts single record to given table
      * @param $table
      * @param $record
-     * @return array
+     * @return int id of inserted record
      */
     public function insert($table, $record)
     {
@@ -589,7 +603,8 @@ class ADB2 implements ADB2Interface
         $params = implode(',', $params);
         $query = "insert into $table($columns) values($params)";
         $this->clearTableCache($table);
-        return $this->executeRawQuery($query, $values);
+        $this->executeRawQuery($query, $values);
+        return $this->lastInsertId();
     }
 
     /**
@@ -911,5 +926,59 @@ class ADB2 implements ADB2Interface
             return false;
         }
         return true;
+    }
+
+    /**
+     * Stores query in a log file for later investigation if
+     * something happens with the database and you need to determine
+     * who is responsible
+     *
+     * @param $query
+     * @param array $params
+     */
+    private function logQuery($query, array $params = [])
+    {
+        if (!isset($this->_conf['query-log-file'])) {
+            return;
+        }
+
+        $fname = $this->_conf['query-log-file'];
+
+        $content = "[" . date('d-m-Y', time()) . "] ";
+        $content .= $this->getFullQuery($query, $params);
+        $content .= "\n";
+        file_put_contents($fname, $content, FILE_APPEND);
+    }
+
+    /**
+     * Returns query string built from arguments for prepared statement
+     *
+     * @param $query
+     * @param array $params
+     * @return string
+     */
+    private function getFullQuery($query, array $params = [])
+    {
+        $fullQuery = $query;
+
+        foreach ($params as $p) {
+            $fullQuery = $this->str_replace_first('?', $p, $fullQuery);
+        }
+
+        return $fullQuery;
+    }
+
+    /**
+     * Replace first occurrence only
+     *
+     * @param $from
+     * @param $to
+     * @param $subject
+     * @return mixed
+     */
+    private function str_replace_first($from, $to, $subject)
+    {
+        $from = '/'.preg_quote($from, '/').'/';
+        return preg_replace($from, $to, $subject, 1);
     }
 }

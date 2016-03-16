@@ -10,8 +10,8 @@ namespace ArchangelDB;
 
 interface ADB2Interface
 {
-    public function executeRawQuery($query, array $params = array());
-    public function executePreparedQuery($query, $params = null);
+    public function executeRawQuery($query, array $params = []);
+    public function executePreparedQuery($query, array $params = []);
     public function fetchAll($table, array $conditions, $columns = '*');
     public function getLastQuery();
     public function getLastQueryTime();
