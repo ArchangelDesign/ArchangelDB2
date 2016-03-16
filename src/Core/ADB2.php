@@ -342,7 +342,8 @@ class ADB2 implements ADB2Interface
                 $this->_conf['throw-engine-message'] = true;
             }
             if ($throw) {
-                if (isset($mysqli->error) && $this->_conf['throw-engine-message']) {
+                if (isset($mysqli->error) && $this->_conf['throw-engine-message']
+                    && !empty($mysqli->error)) {
                     throw new \Exception($mysqli->error);
                 } else {
                     throw $e;
