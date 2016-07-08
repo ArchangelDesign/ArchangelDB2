@@ -448,7 +448,7 @@ class ADB2 implements ADB2Interface
                 return [];
             }
         } catch (\Exception $e) {
-            return [];
+            throw $e;
         }
         $this->storeInCache($table, $conditions, $columns, $data);
         return $data;
