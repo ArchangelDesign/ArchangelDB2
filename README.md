@@ -19,6 +19,7 @@ Advantages
 * ability to add common table prefix
 * easy access to profiler (execution time, full query, query count...)
 * no external dependencies
+* runs queries stored in filesystem (useful for reports)
 * cache system
 * ability to run queries stored in files
 * XML deployment files
