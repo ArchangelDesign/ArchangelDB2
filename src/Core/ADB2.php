@@ -407,10 +407,13 @@ class ADB2 implements ADB2Interface
      * @param $table
      * @param array $conditions column => value
      * @param string $columns
+     * @param null $orderColumn
+     * @param string $orderDirection
+     * @param int|string $limit
      * @return array
      */
     public function fetchAll($table, array $conditions = [], $columns = '*',
-        $orderColumn = null, $orderDirection = 'asc')
+        $orderColumn = null, $orderDirection = 'asc', $limit = 0)
     {
         $cachedResult = $this->fetchFromCache($table, $conditions, $columns);
         if ($cachedResult !== null && is_array($cachedResult)) {
@@ -433,6 +436,9 @@ class ADB2 implements ADB2Interface
         }
         if ($orderColumn !== null) {
             $query .= " order by $orderColumn $orderDirection";
+        }
+        if ($limit !== 0) {
+            $query .= " limit $limit";
         }
         try {
             $buffer = $this->executeRawQuery($query, $vals);
