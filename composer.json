@@ -2,6 +2,7 @@
   "name": "archangeldesign/archangeldb2",
   "description": "PHP database engine wrapper",
   "license": "BSD-3-Clause",
+  "type": "library",
   "keywords": [
     "archangeldesign",
     "mysql",
@@ -14,7 +15,7 @@
     }
   },
   "require": {
-    "php": ">=5.5",
+    "php": ">=5.5"
   },
   "require-dev": {
   },
