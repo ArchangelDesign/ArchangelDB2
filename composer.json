@@ -11,7 +11,7 @@
   "homepage": "http://archangel-design.com",
   "autoload": {
     "psr-4": {
-      "ArchangelDesign/ArchangelDB2" : "src"
+      "ArchangelDesign\\ArchangelDB2" : "src"
     }
   },
   "require": {
