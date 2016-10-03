@@ -1,0 +1,31 @@
+{
+  "name": "archangeldesign/archangeldb2",
+  "description": "PHP database engine wrapper",
+  "license": "BSD-3-Clause",
+  "keywords": [
+    "archangeldesign",
+    "mysql",
+    "php"
+  ],
+  "homepage": "http://archangel-design.com",
+  "autoload": {
+    "psr-4": {
+
+    }
+  },
+  "require": {
+    "php": ">=5.5",
+  },
+  "require-dev": {
+  },
+  "suggest": {
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.0-dev",
+      "dev-develop": "2.0-dev"
+    }
+  }
+}
