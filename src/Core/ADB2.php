@@ -208,7 +208,7 @@ class ADB2 implements ADB2Interface
     private function clearTableCache($table)
     {
         if (!$this->getConfigValue('enable-cache')) {
-            return;
+            return [];
         }
         $dir = $this->getCacheDir();
         return array_map('unlink', glob("$dir/$table*"));
@@ -411,6 +411,7 @@ class ADB2 implements ADB2Interface
      * @param string $orderDirection
      * @param int|string $limit
      * @return array
+     * @throws \Exception
      */
     public function fetchAll($table, array $conditions = [], $columns = '*',
         $orderColumn = null, $orderDirection = 'asc', $limit = 0)
@@ -464,7 +465,7 @@ class ADB2 implements ADB2Interface
      */
     public function fetchOne($table, array $conditions = [], $columns = '*')
     {
-        $result = $this->fetchAll($table, $conditions, $columns);
+        $result = $this->fetchAll($table, $conditions, $columns, null, null, 1);
         if (is_array($result)) {
             return array_shift($result);
         } else {
