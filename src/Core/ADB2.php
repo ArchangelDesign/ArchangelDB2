@@ -936,6 +936,38 @@ class ADB2 implements ADB2Interface
     }
 
     /**
+     * Returns string that can safely be used in query
+     *
+     * @param string $argument
+     * @return string
+     */
+    public function filterSqlArgument($argument)
+    {
+        $initial = addslashes(filter_var($argument, FILTER_UNSAFE_RAW));
+
+        $warningLevel = 0;
+
+        $temp = strtolower($initial);
+        if (strpos($temp, '--')) {
+            $warningLevel++;
+        }
+        if (strpos($temp, 'drop')) {
+            $warningLevel++;
+        }
+        if (strpos($temp, 'delete')) {
+            $warningLevel++;
+        }
+        if (strpos($temp, 'select')) {
+            $warningLevel++;
+        }
+
+        if ($warningLevel > 1) {
+            return "";
+        }
+        return $initial;
+    }
+
+    /**
      * Stores query in a log file for later investigation if
      * something happens with the database and you need to determine
      * who is responsible

@@ -35,4 +35,5 @@ interface ADB2Interface
     public function rsq($name, array $params = []);
     public function sql($name, array $params = []);
     public function isStorageEnabled();
+    public function filterSqlArgument($argument);
 }

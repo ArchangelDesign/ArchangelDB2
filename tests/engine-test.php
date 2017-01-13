@@ -263,5 +263,13 @@ if ($firstOne['date'] != $totalRecords) {
 }
 print("[OK] sorting correct.\n");
 
+print("Checking filters...\n");
+$param = "-- select drop -- %$? ";
+$param = $adb->filterSqlArgument($param);
+if ($param != "") {
+    goDead("Filter SQL Argument did not react properly.");
+}
+print("[OK]\n");
+
 print("Test sequence completed.\n\n");
 print("****** SUCCESS ******\n\n\n");
