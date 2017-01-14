@@ -8,10 +8,15 @@
     "mysql",
     "php"
   ],
+  "authors": [
+    {
+      "name":     "Rafal Martinez-Marjanski",
+    }
+  ],
   "homepage": "http://archangel-design.com",
   "autoload": {
-    "psr-4": {
-      "ArchangelDesign\\ArchangelDB2" : "src"
+    "psr-0": {
+      "ArchangelDB" : "src/"
     }
   },
   "require": {
@@ -25,8 +30,8 @@
   "prefer-stable": true,
   "extra": {
     "branch-alias": {
-      "dev-master": "2.0-dev",
-      "dev-develop": "2.0-dev"
+      "dev-master": "1.1-dev",
+      "dev-develop": "1.1-dev"
     }
   }
 }
