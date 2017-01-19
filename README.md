@@ -30,6 +30,41 @@ Advantages
 
 So far tested on Mysql and PostgreSQL only.
 
+### Installation via composer
+
+Install composer (linux):
+
+```
+curl -sS https://getcomposer.org/installer | php
+```
+
+Create "composer.json" file in your project root.
+Within a "require" section mention ADB2 as follows
+
+```
+{
+  "name": "Your project anme",
+  "description": "your description",
+  "homepage": "http://arcangel-design.com or whatever",
+  "require": {
+    "php": "^5.6 || ^7.0",
+    "archangeldesign/archangeldb2" : "^1.3",
+  }
+}
+```
+
+run composer update/install
+
+```
+php composer.phar update
+```
+
+Include "autoload.php" from vendor directory and you're done.
+Please note that if you are using composer you do not need to
+use "autoload_register.php" file and in further version it
+will be removed. It is recommended that you always use 
+composer to manage your dependencies.
+
 Examples of how easy it is to start using Archangel DB 2
 
 ============================================================================
