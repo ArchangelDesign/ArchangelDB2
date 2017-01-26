@@ -455,6 +455,50 @@ class ADB2 implements ADB2Interface
         return $data;
     }
 
+    public function fetchAllLike($table, array $conditions = [],
+                                 array $likes = [], $columns = "*",
+                                 $orderColumn = null,
+                                 $orderDirection = 'asc', $limit = 0)
+    {
+        // @todo: use cache
+        $table = $this->_conf['prefix'] . $table;
+        $query = "select $columns from $table ";
+        if (!empty($conditions) || !empty($likes)) {
+            $query .= "where ";
+            $cond = [];
+            $vals = [];
+            foreach ($conditions as $key => $condition) {
+                $cond[] = "$key = ?";
+                $vals[] = $condition;
+            }
+            foreach ($likes as $key => $like) {
+                $cond[] = "$key like ?";
+                $vals[] = $like;
+            }
+            $query .= implode(' and ', $cond);
+        } else {
+            $vals = [];
+        }
+        if ($orderColumn !== null) {
+            $query .= " order by $orderColumn $orderDirection";
+        }
+        if ($limit !== 0) {
+            $query .= " limit $limit";
+        }
+        try {
+            $buffer = $this->executeRawQuery($query, $vals);
+            if (@$buffer->valid()) {
+                $data = $buffer->toArray();
+            } else {
+                return [];
+            }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+        return $data;
+    }
+
     /**
      * Fetches single record from database. If more records fit
      * only first one is returned

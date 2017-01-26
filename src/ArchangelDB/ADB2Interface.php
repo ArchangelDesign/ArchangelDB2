@@ -36,4 +36,12 @@ interface ADB2Interface
     public function sql($name, array $params = []);
     public function isStorageEnabled();
     public function filterSqlArgument($argument);
+    public function runStoredQuery($name, array $params = []);
+    public function insertTable($tableName, array $columns, $options = null, $keys = null);
+    public function update($tableName, array $record, $uniqueKey = null);
+    public function fetchList($table, $column,  array $conditions = []);
+    public function getConfigValue($name);
+    public function getConfig();
+    public function purgeAllCaches();
+
 }

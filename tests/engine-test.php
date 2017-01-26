@@ -220,12 +220,12 @@ print("[OK] error handling seems fine.\n");
 
 print("single quote test...\n");
 try {
-    $adb->insert('users', ['name' => "Connan O'Bian"]);
-    $check = $adb->fetchOne('users', ['name' => "Connan O'Bian"]);
+    $adb->insert('users', ['name' => "Connan O'Brian"]);
+    $check = $adb->fetchOne('users', ['name' => "Connan O'Brian"]);
     if (empty($check)) {
         goDead("single quote test failed\n");
     }
-    if ($check['name'] !== "Connan O'Bian") {
+    if ($check['name'] !== "Connan O'Brian") {
         goDead("single quote test failed\n");
     }
 } catch (Exception $e) {
@@ -270,6 +270,20 @@ if ($param != "") {
     goDead("Filter SQL Argument did not react properly.");
 }
 print("[OK]\n");
+
+print("checking fetchAllLike...\n");
+
+$adb->insert('users', ['name' => 'archangel', 'surname' => 'raffael']);
+$record = $adb->fetchAllLike('users', [], ['name' => 'Archan%']);
+if (empty($record)) {
+    goDead("Select like doesnt work.");
+}
+$record = $adb->fetchAllLike('users', [], ['name' => 'archan%']);
+if (empty($record)) {
+    goDead("Select like doesnt work.");
+}
+
+print "[OK]\n\n";
 
 print("Test sequence completed.\n\n");
 print("****** SUCCESS ******\n\n\n");
