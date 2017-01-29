@@ -6,17 +6,14 @@
  * @author Rafal Martinez-Marjanski
  */
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 require 'autoload_register.php';
 
 $adb = new \ArchangelDB\ADB2();
 
 $res = $adb->tableExists('users');
-die();
-$res = $adb->insert('users', ['name' => 'Pascal', 'surname' => 'Picolo', 'date' => 'now()']);
-var_dump($adb->getLastQuery());
-var_dump($adb->lastInsertId());
 
-var_dump($adb->updateRecords('users', ['id' => 34, 'name' => 'Pascal', 'date' => '321321321']));
-var_dump($adb->getLastQuery());
-
-var_dump($adb->fetchAll('users'));
+$result = $adb->adbfetch('users', [], [], [], ['name']);
+var_dump($result);

@@ -12,9 +12,11 @@
 namespace ArchangelDB;
 
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\Adapter\Driver\ResultInterface;
 use Zend\Db\Exception\ErrorException;
 use Zend\Db\Exception\InvalidArgumentException;
 use Zend\Db\ResultSet\ResultSet;
+use Zend\Db\Sql\Sql;
 
 /**
  * Class ADB2
@@ -110,6 +112,11 @@ class ADB2 implements ADB2Interface
             return $dir;
         }
         return $dir . '/' . $hash;
+    }
+
+    private function addPrefix($tableName)
+    {
+        return $this->_conf['prefix'] . $tableName;
     }
 
     /**
@@ -497,6 +504,52 @@ class ADB2 implements ADB2Interface
         }
 
         return $data;
+    }
+
+    /**
+     * Returns data from given table as associative array
+     * 
+     * @param $table string
+     * @param array $columns ['col1', 'col2']
+     * @param array $where ['column' => 'value']
+     * @param array $having
+     * @param array $group ['field_1', 'field_2']
+     * @param array $join  [['table', 'on', 'columns', 'inner|outer|left|right']]
+     * @return array
+     */
+    public function adbfetch($table, $columns = [], $where = [], $having = [], $group = [], $join = [])
+    {
+        $table = $this->addPrefix($table);
+        $sql = new Sql($this->_adapter);
+        $select = $sql->select($table);
+
+        if (!empty($columns)) {
+            $select->columns($columns);
+        }
+
+        $select->where($where);
+        $select->having($having);
+        $select->group($group);
+        if (!empty($join)) {
+            foreach ($join as $j) {
+                $select->join($j[0], $j[1], $j[2], $j[3]);
+            }
+        }
+        $query = $sql->getSqlStringForSqlObject($select);
+        echo $query;
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        return $this->_getQueryResult($result);
+    }
+
+    private function _getQueryResult(ResultInterface $resultObject)
+    {
+        $result = new ResultSet();
+        $result->initialize($resultObject);
+        if ($result->count() == 0) {
+            return [];
+        }
+        return $result->toArray();
     }
 
     /**
