@@ -34,5 +34,14 @@ function getOrderStructure()
             'length' => 50,
             'default' => "'-none-'",
         ],
+        'status' => [
+            'type' => 'TINYINT',
+            'length' => 1,
+            'default' => 0,
+        ],
+        'date' => [
+            'type' => 'DATETIME'
+
+        ],
     ];
 }

@@ -869,7 +869,8 @@ class ADB2 implements ADB2Interface
             $notNull = isset($definition['notnull'])?'not null':'';
             $auto = isset($definition['autoincrement'])?'auto_increment':'';
             $defaultValue = isset($definition['default']) ? "DEFAULT $definition[default]" : "";
-            $cols[] = "$name $definition[type]($definition[length]) $notNull $auto $defaultValue";
+            $length = isset($definition['length']) ? '(' . $definition['length'] . ')' : '';
+            $cols[] = "$name $definition[type]$length $notNull $auto $defaultValue";
             if (isset($definition['primary'])) {
                 if ($definition['primary']) {
                     $primary = $name;
@@ -880,7 +881,7 @@ class ADB2 implements ADB2Interface
         if ($primary) {
             $colsDefs .= ", PRIMARY KEY(`$primary`)";
         }
-        
+
         $this->executeRawQuery("create table $tname ($colsDefs)");
         return true;
     }
