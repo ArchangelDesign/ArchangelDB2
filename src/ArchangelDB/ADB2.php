@@ -864,12 +864,23 @@ class ADB2 implements ADB2Interface
     {
         $tname = '{' . $tableName . '}';
         $cols = [];
+        $primary = null;
         foreach ($columns as $name => $definition) {
             $notNull = isset($definition['notnull'])?'not null':'';
             $auto = isset($definition['autoincrement'])?'auto_increment':'';
-            $cols[] = "$name $definition[type]($definition[length]) $notNull $auto";
+            $defaultValue = isset($definition['default']) ? "DEFAULT $definition[default]" : "";
+            $cols[] = "$name $definition[type]($definition[length]) $notNull $auto $defaultValue";
+            if (isset($definition['primary'])) {
+                if ($definition['primary']) {
+                    $primary = $name;
+                }
+            }
         }
         $colsDefs = implode(',', $cols);
+        if ($primary) {
+            $colsDefs .= ", PRIMARY KEY(`$primary`)";
+        }
+        
         $this->executeRawQuery("create table $tname ($colsDefs)");
         return true;
     }

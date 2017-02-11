@@ -8,9 +8,15 @@ global $adb;
 echo "\n==== FETCH ====\n\n";
 
 if (!$adb->tableExists('orders')) {
-    echo "Table is missing. Trying to create...";
+    echo "Table is missing. Trying to create... ";
 
-    $adb->createTable('orders', $structure);
+    try {
+        $adb->createTable('orders', getOrderStructure());
+        echo "[OK]\n";
+    } catch (Exception $e) {
+        echo "[FAILED]\n";
+        goDead("Failed to create table orders");
+    }
 }
 
 function getOrderStructure()
@@ -19,8 +25,14 @@ function getOrderStructure()
         'id' => [
             'type' => 'INT',
             'length' => 11,
-            'notnull',
-            'autoincrement',
-        ]
+            'notnull' => true,
+            'autoincrement' => true,
+            'primary' => true,
+        ],
+        'username' => [
+            'type' => 'VARCHAR',
+            'length' => 50,
+            'default' => "'-none-'",
+        ],
     ];
 }
