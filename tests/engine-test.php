@@ -9,6 +9,8 @@ print "Testing ADB2...\n";
 
 require '../autoload_register.php';
 
+print "[OK] Autoloader\n";
+
 function goDead($msg) {
     print("====== FAILED ======\n");
     print($msg."\n");
@@ -17,6 +19,7 @@ function goDead($msg) {
 
 try {
     $adb = new \ArchangelDB\ADB2();
+    print "[OK] ADB2 object\n";
 } catch (Exception $e) {
     print "Failed to create ADB \n".$e->getMessage(); die();
 }
@@ -47,6 +50,7 @@ if (!$adb->tableExists('users')) {
     goDead("No users table found in database.");
 }
 
+print("[OK] users table\n");
 print("running column exists test...\n");
 if (!$adb->columnExists('users', 'name')) {
     goDead("columnExists(name) failed.");
@@ -284,6 +288,23 @@ if (empty($record)) {
 }
 
 print "[OK]\n\n";
+
+print "Running additional tests...\n\n";
+
+$tests = scandir(__DIR__ . '/');
+
+array_walk($tests, function($test) {
+    if ($test == '.' || $test == '..' || $test == 'engine-test.php') {
+        return;
+    }
+    print("running $test... ");
+    try {
+        include __DIR__ . '/' . $test;
+    } catch (Exception $e) {
+        print("[FAILED] \n" . $e->getMessage());
+    }
+    print("[OK]\n");
+});
 
 print("Test sequence completed.\n\n");
 print("****** SUCCESS ******\n\n\n");

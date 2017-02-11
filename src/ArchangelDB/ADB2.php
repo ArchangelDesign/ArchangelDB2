@@ -51,7 +51,7 @@ class ADB2 implements ADB2Interface
      */
     public function getVersion()
     {
-        return self::ADB_VERSION;
+
     }
 
     /**
@@ -508,7 +508,7 @@ class ADB2 implements ADB2Interface
 
     /**
      * Returns data from given table as associative array
-     * 
+     *
      * @param $table string
      * @param array $columns ['col1', 'col2']
      * @param array $where ['column' => 'value']
@@ -517,7 +517,7 @@ class ADB2 implements ADB2Interface
      * @param array $join  [['table', 'on', 'columns', 'inner|outer|left|right']]
      * @return array
      */
-    public function adbfetch($table, $columns = [], $where = [], $having = [], $group = [], $join = [])
+    public function fetch($table, $columns = [], $where = [], $having = [], $group = [], $join = [])
     {
         $table = $this->addPrefix($table);
         $sql = new Sql($this->_adapter);
@@ -866,7 +866,7 @@ class ADB2 implements ADB2Interface
         $cols = [];
         foreach ($columns as $name => $definition) {
             $notNull = isset($definition['notnull'])?'not null':'';
-            $auto = isset($definition['auto'])?'auto_increment':'';
+            $auto = isset($definition['autoincrement'])?'auto_increment':'';
             $cols[] = "$name $definition[type]($definition[length]) $notNull $auto";
         }
         $colsDefs = implode(',', $cols);
