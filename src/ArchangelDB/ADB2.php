@@ -18,6 +18,9 @@ use Zend\Db\Exception\InvalidArgumentException;
 use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\Sql\Sql;
 
+// @todo: nasty workaround to make direct use easier
+require_once __DIR__ . '/../../autoload_register.php';
+
 /**
  * Class ADB2
  * @package ArchangelDB
