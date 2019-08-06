@@ -1,5 +1,5 @@
 # ArchangelDB module for PHP 5.5 application
-#### copyright (c) www.archangeldesign.github.io
+#### copyright (c) https://archangeldesign.github.io
 
 ** Simple but powerful PHP Database Engine **
 
